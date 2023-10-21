@@ -468,6 +468,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen2> {
                                               preselectWallet();
                                             }
                                           },
+
                                           isSelected:
                                               walletType == WalletType.Hubtel,
                                           editingController:
@@ -484,7 +485,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen2> {
                                             fetchFees2();
                                             log('onChannelChanged - provider {$provider}',
                                                 name: '$runtimeType');
-                                          },
+                                          }, onNewMandateChecked: (bool? value) {  },
                                         )
                                       ],
                                     )),

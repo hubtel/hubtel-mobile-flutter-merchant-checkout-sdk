@@ -13,7 +13,7 @@ import 'package:unified_checkout_sdk/resources/checkout_drawables.dart';
 import 'package:unified_checkout_sdk/resources/checkout_strings.dart';
 import 'package:unified_checkout_sdk/utils/currency_formatter.dart';
 import 'package:unified_checkout_sdk/utils/custom_expansion_widget.dart'
-as customExpansion;
+    as customExpansion;
 
 enum OtherAccountTypes {
   Hubtel("Hubtel"),
@@ -36,6 +36,8 @@ class OtherPaymentExpansionTile extends StatefulWidget {
 
   bool showGmoneyWalletActions = false;
 
+  bool? isNewMandateChecked = false;
+
   bool showZeePayWalletActions = false;
 
   String selectedAccount = "Hubtel";
@@ -43,6 +45,8 @@ class OtherPaymentExpansionTile extends StatefulWidget {
   Function(Wallet) onWalletSelected;
 
   Function(String) onChannelChanged;
+
+  Function(bool?) onNewMandateChecked;
 
   List<Wallet> walletTypes = [
     Wallet(
@@ -70,18 +74,19 @@ class OtherPaymentExpansionTile extends StatefulWidget {
 
   List<Wallet> wallets;
 
-  OtherPaymentExpansionTile(
-      {Key? key,
-        required this.controller,
-        required this.onExpansionChanged,
-        required this.editingController,
-        required this.isSelected,
-        required this.wallets,
-        required this.onWalletSelected,
-        required this.anotherEditingController,
-        required this.onChannelChanged
-      })
-      : super(key: key);
+  OtherPaymentExpansionTile({
+    Key? key,
+    required this.controller,
+    required this.onExpansionChanged,
+    required this.editingController,
+    required this.isSelected,
+    required this.wallets,
+    required this.onWalletSelected,
+    required this.anotherEditingController,
+    required this.onChannelChanged,
+    this.isNewMandateChecked = false,
+    required this.onNewMandateChecked,
+  }) : super(key: key);
 
   final customExpansion.ExpansionTileController controller;
   final void Function(bool)? onExpansionChanged;
@@ -106,13 +111,15 @@ class _OtherPaymentExpansionTileState extends State<OtherPaymentExpansionTile> {
   //   autoSelectFirstWallet();
   // }
 
+  bool? showGMoneyInstruction;
+
   @override
   Widget build(BuildContext context) {
-    // _onPaymentTypeChanged(selectedAccount: widget.selectedAccount);
     return customExpansion.ExpansionTile(
       controller: widget.controller,
-      headerBackgroundColor:
-      widget.isSelected ? ThemeConfig.themeColor.withOpacity(0.3) : Colors.transparent,
+      headerBackgroundColor: widget.isSelected
+          ? ThemeConfig.themeColor.withOpacity(0.3)
+          : Colors.transparent,
       onExpansionChanged: widget.onExpansionChanged,
       maintainState: true,
       title: Text(
@@ -124,7 +131,7 @@ class _OtherPaymentExpansionTileState extends State<OtherPaymentExpansionTile> {
         horizontal: Dimens.paddingDefault,
         vertical: Dimens.paddingDefault,
       ),
-      trailing:  Row(
+      trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           AppImageWidget.local(
@@ -163,28 +170,33 @@ class _OtherPaymentExpansionTileState extends State<OtherPaymentExpansionTile> {
             fieldController: widget.editingController,
             wallets: widget.walletTypes,
             onWalletSelected: (wallet) {
+              log('payment type ${wallet.accountName}', name: '$runtimeType');
+              if (wallet.accountName == 'GMoney') {
+                showGMoneyInstruction = true;
+              } else {
+                showGMoneyInstruction = null;
+              }
               _onPaymentTypeChanged(selectedAccount: wallet.accountName ?? "");
-
             },
             onProviderSelected: (provider) {
               log('$provider', name: '$runtimeType');
             },
-            hintText: "Hubtel"),
-
+            hintText: "Hubtel",),
         Visibility(
-            visible: widget.showHubtelWalletActions,
-            child: Container(
-              alignment: Alignment.topLeft,
-              child: const Padding(
-                padding: EdgeInsets.only(top: 8),
-                child: Text(
-                  "Your balance Hubtel will be debited immediately you confirm. \n\nNo authorzation prompt will be sent to you",
-                  textAlign: TextAlign.start,
-                ),
+          visible: widget.showHubtelWalletActions,
+          child: Container(
+            alignment: Alignment.topLeft,
+            child: const Padding(
+              padding: EdgeInsets.only(top: 8),
+              child: Text(
+                "Your balance Hubtel will be debited immediately you confirm. \n\nNo authorization prompt will be sent to you",
+                textAlign: TextAlign.start,
               ),
-            )),
+            ),
+          ),
+        ),
         Visibility(
-            visible: widget.showGmoneyWalletActions ||
+            visible: showGMoneyInstruction != null ||
                 widget.showZeePayWalletActions,
             child: Padding(
               padding: const EdgeInsets.only(top: 16),
@@ -200,17 +212,21 @@ class _OtherPaymentExpansionTileState extends State<OtherPaymentExpansionTile> {
                   hintText: "Hinting"),
             )),
         Visibility(
-          visible: widget.showGmoneyWalletActions,
+          visible: showGMoneyInstruction != null,
           child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
             Checkbox(
-                value: true, onChanged: (value) {}
-            )
-            ,
-            Text("Use Mandate ID")
+                value: widget.isNewMandateChecked,
+                onChanged: (bool? value) {
+                  // setState(() {
+                  //   widget.showGmoneyWalletActions = true;
+                  // });
+                  widget.onNewMandateChecked(value);
+                }),
+            const Text("Use Mandate ID")
           ]),
         ),
         Visibility(
-            visible: widget.showGmoneyWalletActions,
+            visible: showGMoneyInstruction != null,
             child: Padding(
               padding: EdgeInsets.only(top: 8),
               child: Text(
@@ -225,11 +241,27 @@ class _OtherPaymentExpansionTileState extends State<OtherPaymentExpansionTile> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Steps to authorize payment", style: AppTextStyle.body2().copyWith(fontWeight: FontWeight.bold),),
-                    Text("1. Dial *270#",style: AppTextStyle.body2(),),
-                    Text("2. Select Option 8 (Account)", style: AppTextStyle.body2(),),
-                    Text("3. Select Option 4 (Approve Payment)", style: AppTextStyle.body2(),),
-                    Text("4. Enter Pin to make Payment", style: AppTextStyle.body2(),),
+                    Text(
+                      "Steps to authorize payment",
+                      style: AppTextStyle.body2()
+                          .copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      "1. Dial *270#",
+                      style: AppTextStyle.body2(),
+                    ),
+                    Text(
+                      "2. Select Option 8 (Account)",
+                      style: AppTextStyle.body2(),
+                    ),
+                    Text(
+                      "3. Select Option 4 (Approve Payment)",
+                      style: AppTextStyle.body2(),
+                    ),
+                    Text(
+                      "4. Enter Pin to make Payment",
+                      style: AppTextStyle.body2(),
+                    ),
                   ],
                 ),
               ),
@@ -239,16 +271,14 @@ class _OtherPaymentExpansionTileState extends State<OtherPaymentExpansionTile> {
   }
 
   _onPaymentTypeChanged({required String selectedAccount}) {
+    log('Selected Account: $selectedAccount', name: '$runtimeType');
 
-    //
     if (OtherAccountTypes.Hubtel.rawValue == selectedAccount) {
       widget.onChannelChanged('hubtel-gh');
       setState(() {
-        // widget.selectedAccount = "Hubtel";
         widget.showHubtelWalletActions = true;
         widget.showGmoneyWalletActions = false;
         widget.showZeePayWalletActions = false;
-
       });
 
       return;
@@ -266,7 +296,6 @@ class _OtherPaymentExpansionTileState extends State<OtherPaymentExpansionTile> {
     }
 
     if (OtherAccountTypes.Zeepay.rawValue == selectedAccount) {
-
       setState(() {
         widget.onChannelChanged('zeepay');
         widget.showHubtelWalletActions = false;
@@ -276,6 +305,5 @@ class _OtherPaymentExpansionTileState extends State<OtherPaymentExpansionTile> {
 
       return;
     }
-
   }
 }

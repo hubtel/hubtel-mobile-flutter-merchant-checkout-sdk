@@ -32,7 +32,7 @@ class Requester {
 
     var headers = endPoint.headers;
 
-    log("${endPoint.requestType.toString()} Request Initiated : ${endPoint.address} \nParams: ${endPoint.body} \nHeaders $headers");
+    // log("${endPoint.requestType.toString()} Request Initiated : ${endPoint.address} \nParams: ${endPoint.body} \nHeaders $headers");
 
     var timeOutDuration = const Duration(seconds: 60);
 
@@ -44,7 +44,7 @@ class Requester {
     }
 
     try {
-      log("Response with code : ${_response.statusCode} for ${endPoint.requestType.toString()} >> ${endPoint.address} with params ${endPoint.body} : \nResponse >> ${_response.body}");
+      // log("Response with code : ${_response.statusCode} for ${endPoint.requestType.toString()} >> ${endPoint.address} with params ${endPoint.body} : \nResponse >> ${_response.body}");
 
       var jsonResponse = json.decode(_response.body);
 

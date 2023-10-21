@@ -104,6 +104,8 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
 
   MomoProvider? selectedProvider;
 
+  bool isNewMandateChecked = false;
+
   String? savedCardCvv;
 
   String? newCardNumber;
@@ -432,17 +434,16 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
                                           controller:
                                               otherPaymentWalletExpansionController,
                                           onExpansionChanged: (value) async {
-                                            // setState(() {
-                                            //   walletType == WalletType.Hubtel;
-                                            // });
                                             await onOtherTileExpansionChanged(
                                                 value);
                                             if (preselectOtherMomoWallet) {
                                               preselectWallet();
                                             }
                                           },
-                                          isSelected:
-                                              walletType == WalletType.Hubtel,
+                                          isSelected: walletType ==
+                                                  WalletType.Hubtel ||
+                                              walletType == WalletType.GMoney ||
+                                              walletType == WalletType.Zeepay,
                                           editingController:
                                               momoSelectorController,
                                           onWalletSelected: (wallet) {
@@ -456,9 +457,17 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
                                                 MomoProvider(alias: provider);
                                             changeWalletType(provider);
                                             fetchFees2();
-                                            log('onChannelChanged - provider {$provider}',
-                                                name: '$runtimeType');
                                           },
+                                          onNewMandateChecked: (bool? value) {
+                                            setState(() {
+                                              isNewMandateChecked =
+                                                  !isNewMandateChecked;
+                                            });
+
+                                            log('$isNewMandateChecked', name: '$runtimeType');
+                                          },
+                                          isNewMandateChecked:
+                                              isNewMandateChecked,
                                         ),
                                         Container(
                                           height: 1,
@@ -476,12 +485,9 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
                                                   .collapse();
                                               otherPaymentWalletExpansionController
                                                   .collapse();
-                                              // bankPayExpansionController
-                                              //     .collapse();
                                               setState(() {
                                                 walletType = WalletType.BankPay;
                                               });
-
                                               fetchFees2();
                                             }
                                           },
@@ -757,7 +763,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
             ),
           );
 
-          if (navigatorResult == true){
+          if (navigatorResult == true) {
             payWithMomo();
           }
       }
@@ -1030,6 +1036,7 @@ class _CheckoutHomeScreenState {
   final ValueNotifier<bool> _isButtonEnabled = ValueNotifier(false);
   final ValueNotifier<bool> _isLoadingFees = ValueNotifier(false);
   final ValueNotifier<String> _selectedChannel = ValueNotifier('Hubtel');
+  final ValueNotifier<bool> _isNewMandateChecked = ValueNotifier(false);
 
   ValueNotifier<double?> get checkoutFees => _checkoutFees;
 
@@ -1038,4 +1045,10 @@ class _CheckoutHomeScreenState {
   ValueNotifier<bool> get isLoadingFees => _isLoadingFees;
 
   ValueNotifier<String> get selectedChannel => _selectedChannel;
+
+  ValueNotifier<bool> get isNewMandateChecked => _isNewMandateChecked;
+
+  onNewMandateCheckChanged(bool? value) {
+    _isNewMandateChecked.value = value!;
+  }
 }
