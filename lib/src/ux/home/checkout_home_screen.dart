@@ -77,8 +77,6 @@ class _CheckoutHomeScreenState extends State<CheckoutHomeScreen> {
 
   MomoProvider? selectedProvider;
 
-  bool isNewMandateChecked = false;
-
   String? savedCardCvv;
 
   String? newCardNumber;
@@ -120,6 +118,8 @@ class _CheckoutHomeScreenState extends State<CheckoutHomeScreen> {
   final viewModel = CheckoutViewModel();
 
   late customExpansion.ExpansionTileController bankPayExpansionController;
+
+  bool isNewMandateIdChecked = false;
 
   @override
   initState() {
@@ -421,6 +421,7 @@ class _CheckoutHomeScreenState extends State<CheckoutHomeScreen> {
                                               momoSelectorController,
                                           onWalletSelected: (wallet) {
                                             selectedWallet = wallet;
+                                            fetchFees2();
                                           },
                                           wallets: wallets,
                                           anotherEditingController:
@@ -430,18 +431,15 @@ class _CheckoutHomeScreenState extends State<CheckoutHomeScreen> {
                                                 MomoProvider(alias: provider);
                                             changeWalletType(provider);
                                             fetchFees2();
-                                          },
-                                          onNewMandateChecked: (bool? value) {
-                                            setState(() {
-                                              isNewMandateChecked =
-                                                  !isNewMandateChecked;
-                                            });
-
-                                            log('$isNewMandateChecked',
+                                            log('onChannelChanged - provider {$provider}',
                                                 name: '$runtimeType');
                                           },
-                                          isNewMandateChecked:
-                                              isNewMandateChecked,
+                                          onMandateTap: (value) {
+                                            isNewMandateIdChecked = value;
+
+                                            print(
+                                                "onMandateTap, $isNewMandateIdChecked");
+                                          },
                                         ),
                                         Container(
                                           height: 1,
@@ -1003,7 +1001,6 @@ class _CheckoutHomeState {
   final ValueNotifier<bool> _isButtonEnabled = ValueNotifier(false);
   final ValueNotifier<bool> _isLoadingFees = ValueNotifier(false);
   final ValueNotifier<String> _selectedChannel = ValueNotifier('Hubtel');
-  final ValueNotifier<bool> _isNewMandateChecked = ValueNotifier(false);
 
   ValueNotifier<double?> get checkoutFees => _checkoutFees;
 
@@ -1012,10 +1009,4 @@ class _CheckoutHomeState {
   ValueNotifier<bool> get isLoadingFees => _isLoadingFees;
 
   ValueNotifier<String> get selectedChannel => _selectedChannel;
-
-  ValueNotifier<bool> get isNewMandateChecked => _isNewMandateChecked;
-
-  onNewMandateCheckChanged(bool? value) {
-    _isNewMandateChecked.value = value!;
-  }
 }
