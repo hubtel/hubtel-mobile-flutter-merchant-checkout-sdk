@@ -55,7 +55,7 @@ class _MobileMoneyExpansionTileState extends State<MobileMoneyExpansionTile> {
     //   }
     // MobileMoneyExpansionTile.fetchFees = false;
     // }
-    log("hereeeeee ${widget.wallets.length}",
+    log('no. of wallets ${widget.wallets.length}',
         time: DateTime.now(), name: runtimeType.toString());
     return Column(
       children: [
@@ -113,24 +113,20 @@ class _MobileMoneyExpansionTileState extends State<MobileMoneyExpansionTile> {
           leadingWidth: Dimens.iconMedium,
           titleAlignment: ListTileTitleAlignment.center,
           children: [
-            Container(
-              child: MobileMoneyTileField(
-                fieldController: widget.mobileNumberController,
-                onWalletSelected: widget.onWalletSelected,
-                onProviderSelected: widget.onProviderSelected,
-                wallets: widget.wallets,
-                hintText: CheckoutStrings.mobileNumber,
-              ),
+            MobileMoneyTileField(
+              fieldController: widget.mobileNumberController,
+              onWalletSelected: widget.onWalletSelected,
+              onProviderSelected: widget.onProviderSelected,
+              wallets: widget.wallets,
+              hintText: CheckoutStrings.mobileNumber,
             ),
             const SizedBox(height: Dimens.paddingDefault),
-            Container(
-              child: MobileMoneyTileField(
-                fieldController: widget.providerController,
-                onWalletSelected: widget.onWalletSelected,
-                onProviderSelected: widget.onProviderSelected,
-                providers: widget.providers,
-                hintText: CheckoutStrings.mobileNetwork,
-              ),
+            MobileMoneyTileField(
+              fieldController: widget.providerController,
+              onWalletSelected: widget.onWalletSelected,
+              onProviderSelected: widget.onProviderSelected,
+              providers: widget.providers,
+              hintText: CheckoutStrings.mobileNetwork,
             ),
             const SizedBox(height: Dimens.paddingDefault),
             widget.selectedProviderMessage,
@@ -147,7 +143,7 @@ class _MobileMoneyExpansionTileState extends State<MobileMoneyExpansionTile> {
 
       if (firstWallet != null) {
         widget.onWalletSelected.call(firstWallet);
-        widget.mobileNumberController.text = firstWallet.accountNo ?? "";
+        widget.mobileNumberController.text = firstWallet.accountNo ?? '';
         var provider = widget.providers
             .where((p) =>
                 p.alias?.toLowerCase() == firstWallet.provider?.toLowerCase())
@@ -155,7 +151,7 @@ class _MobileMoneyExpansionTileState extends State<MobileMoneyExpansionTile> {
             .firstOrNull;
         if (provider != null) {
           widget.onProviderSelected.call(provider);
-          widget.providerController.text = provider.name ?? "";
+          widget.providerController.text = provider.name ?? '';
         }
       }
     });

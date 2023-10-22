@@ -1,4 +1,5 @@
-import 'dart:math';
+
+import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import '../../network_manager/network_manager.dart';
@@ -23,49 +24,29 @@ class CheckoutViewModel extends ChangeNotifier {
 
   final List<MomoProvider> providers = [
     MomoProvider(
-        name: "MTN",
-        logoUrl: "",
-        alias: "mtn-gh",
-        receiveMoneyPromptValue: "mtn-gh",
-        preapprovalConfirmValue: "",
-        directDebitValue: "mtn-gh-direct-debit"),
+        name: 'MTN',
+        logoUrl: '',
+        alias: 'mtn-gh',
+        receiveMoneyPromptValue: 'mtn-gh',
+        preapprovalConfirmValue: '',
+        directDebitValue: 'mtn-gh-direct-debit'),
     MomoProvider(
-        name: "Vodafone",
-        logoUrl: "",
-        alias: "vodafone",
-        receiveMoneyPromptValue: "vodafone-gh",
-        preapprovalConfirmValue: "",
-        directDebitValue: "vodafone-gh-direct-debit"),
+        name: 'Vodafone',
+        logoUrl: '',
+        alias: 'vodafone',
+        receiveMoneyPromptValue: 'vodafone-gh',
+        preapprovalConfirmValue: '',
+        directDebitValue: 'vodafone-gh-direct-debit'),
     MomoProvider(
-        name: "Airtel Tigo",
-        logoUrl: "",
-        alias: "airtelTigo",
-        receiveMoneyPromptValue: "tigo-gh",
-        preapprovalConfirmValue: "",
-        directDebitValue: "tigo-gh-direct-debit"),
+        name: 'Airtel Tigo',
+        logoUrl: '',
+        alias: 'airtelTigo',
+        receiveMoneyPromptValue: 'tigo-gh',
+        preapprovalConfirmValue: '',
+        directDebitValue: 'tigo-gh-direct-debit'),
   ];
 
   late final CheckoutApi _checkoutApi = CheckoutApi(requester: requester);
-
-  // String getMomoChannelName(String? selectedProviderName) {
-  //   final lowerCasedSelectedProviderName = selectedProviderName?.toLowerCase();
-  //
-  //   final isProviderMTN = lowerCasedSelectedProviderName
-  //           ?.contains(CheckoutStrings.mtnShortString) ??
-  //       false;
-  //   final isProviderVodafone =
-  //       lowerCasedSelectedProviderName?.contains(CheckoutStrings.vodafone) ??
-  //           false;
-  //   final isProviderAirtelTigo = lowerCasedSelectedProviderName
-  //           ?.contains(RegExp(CheckoutStrings.atRegex)) ??
-  //       false;
-  //
-  //   if (isProviderMTN) return CheckoutStrings.mtnGh;
-  //   if (isProviderVodafone) return CheckoutStrings.vodafone_gh_ussd;
-  //   if (isProviderAirtelTigo) return CheckoutStrings.tigoGh;
-  //
-  //   return '';
-  // }
 
   //TODO: fetch channels
   Future<UiResult<ChannelFetchResponse>> fetchChannels() async {
@@ -77,34 +58,34 @@ class CheckoutViewModel extends ChangeNotifier {
 
       merchantRequiresKyc = result.response?.data?.requireNationalID;
 
-      print("fetched channels ${channelResponse?.businessLogoUrl}");
+      log('fetched channels ${channelResponse?.businessLogoUrl}', name: '$runtimeType');
       CheckoutViewModel.channelFetch = result.response?.data;
-      print(channelResponse?.isHubtelInternalMerchant);
+      log('isInternalMerchant: ${channelResponse?.isHubtelInternalMerchant}', name: '$runtimeType');
       notifyListeners();
-      return UiResult(state: UiState.success, message: "Success", data: data);
+      return UiResult(state: UiState.success, message: 'Success', data: data);
     }
     return UiResult(
         state: UiState.error,
-        message: result.response?.message ?? "",
+        message: result.response?.message ?? '',
         data: null);
   }
 
   //TODO: fetch wallets
 
   Future<UiResult<List<Wallet>>> fetchWallets() async {
-    print("called here");
+    log('called here', name: '$runtimeType');
     final result = await _checkoutApi.fetchWallets();
 
     if (result.apiResult == ApiResult.Success) {
       final data = result.response?.data;
       wallets = result.response?.data;
-      print("wallets Count here ${wallets?.length}");
+      log('wallets Count here ${wallets?.length}');
       notifyListeners();
-      return UiResult(state: UiState.success, message: "Success", data: data);
+      return UiResult(state: UiState.success, message: 'Success', data: data);
     }
     return UiResult(
         state: UiState.error,
-        message: result.response?.message ?? "",
+        message: result.response?.message ?? '',
         data: null);
   }
 
@@ -117,11 +98,11 @@ class CheckoutViewModel extends ChangeNotifier {
       final data = result.response?.data;
       notifyListeners();
       CheckoutViewModel.checkoutType = result.response?.data?.getCheckoutType();
-      return UiResult(state: UiState.success, message: "Success", data: data);
+      return UiResult(state: UiState.success, message: 'Success', data: data);
     }
     return UiResult(
         state: UiState.error,
-        message: result.response?.message ?? "",
+        message: result.response?.message ?? '',
         data: null);
   }
 
@@ -132,16 +113,16 @@ class CheckoutViewModel extends ChangeNotifier {
 
     if (result.apiResult == ApiResult.Success) {
       final data = result.response?.data;
-      print(result.response?.data?.amountCharged);
+      log('${result.response?.data?.amountCharged}', name: '$runtimeType');
       return UiResult(
         state: UiState.success,
-        message: "Success",
+        message: 'Success',
         data: data,
       );
     }
     return UiResult(
         state: UiState.error,
-        message: result.response?.message ?? "",
+        message: result.response?.message ?? '',
         data: null);
   }
 
@@ -154,11 +135,11 @@ class CheckoutViewModel extends ChangeNotifier {
 
     if (result.apiResult == ApiResult.Success) {
       final data = result.response?.data;
-      return UiResult(state: UiState.success, message: "Success", data: data);
+      return UiResult(state: UiState.success, message: 'Success', data: data);
     }
     return UiResult(
         state: UiState.error,
-        message: result.response?.message ?? "",
+        message: result.response?.message ?? '',
         data: null);
   }
 
@@ -169,11 +150,11 @@ class CheckoutViewModel extends ChangeNotifier {
 
     if (result.apiResult == ApiResult.Success) {
       final data = result.response?.data;
-      return UiResult(state: UiState.success, message: "Success", data: data);
+      return UiResult(state: UiState.success, message: 'Success', data: data);
     }
     return UiResult(
         state: UiState.error,
-        message: result.response?.message ?? "",
+        message: result.response?.message ?? '',
         data: null);
   }
 
@@ -184,11 +165,11 @@ class CheckoutViewModel extends ChangeNotifier {
 
     if (result.apiResult == ApiResult.Success) {
       final data = result.response?.data;
-      return UiResult(state: UiState.success, message: "Success", data: data);
+      return UiResult(state: UiState.success, message: 'Success', data: data);
     }
     return UiResult(
         state: UiState.error,
-        message: result.response?.message ?? "",
+        message: result.response?.message ?? '',
         data: null);
   }
 
@@ -198,11 +179,11 @@ class CheckoutViewModel extends ChangeNotifier {
 
     if (result.apiResult == ApiResult.Success) {
       final data = result.response?.data;
-      return UiResult(state: UiState.success, message: "Success", data: data);
+      return UiResult(state: UiState.success, message: 'Success', data: data);
     }
     return UiResult(
         state: UiState.error,
-        message: result.response?.message ?? "",
+        message: result.response?.message ?? '',
         data: null);
   }
 
@@ -214,9 +195,9 @@ class CheckoutViewModel extends ChangeNotifier {
 
     if (result.apiResult == ApiResult.Success){
       final data = result.response?.data;
-      return UiResult(state: UiState.success, message: "Success", data: data);
+      return UiResult(state: UiState.success, message: 'Success', data: data);
     }
-    return UiResult(state: UiState.error, message: result.response?.message ?? "", data: null);
+    return UiResult(state: UiState.error, message: result.response?.message ?? '', data: null);
   }
 
 
@@ -227,8 +208,8 @@ class CheckoutViewModel extends ChangeNotifier {
 
     if (result.apiResult == ApiResult.Success){
       final data = result.response?.data;
-      return UiResult(state: UiState.success, message: "Success", data: data);
+      return UiResult(state: UiState.success, message: 'Success', data: data);
     }
-    return UiResult(state: UiState.error, message: result.response?.message ?? "", data: null);
+    return UiResult(state: UiState.error, message: result.response?.message ?? '', data: null);
   }
 }
