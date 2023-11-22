@@ -10,12 +10,14 @@ import '../view_model/checkout_view_model.dart';
 class WebCheckoutPageData {
   String jwt, orderId, reference;
   String? customData;
+  String? html;
 
   WebCheckoutPageData({
     required this.jwt,
     required this.orderId,
     required this.reference,
     this.customData,
+    this.html
   });
 }
 
@@ -23,9 +25,12 @@ class CheckoutWebViewWidget extends StatefulWidget {
   // CheckoutPurchase checkoutPurchase;
   WebCheckoutPageData pageData;
 
+
+
+
   CheckoutWebViewWidget({
     Key? key,
-    required this.pageData,
+    required this.pageData
   }) : super(key: key);
 
   @override
@@ -34,6 +39,7 @@ class CheckoutWebViewWidget extends StatefulWidget {
 
 class _CheckoutWebViewWidgetState extends State<CheckoutWebViewWidget> {
   late final WebViewController controller;
+
 
   late CheckoutViewModel viewModel;
 
@@ -44,12 +50,7 @@ class _CheckoutWebViewWidgetState extends State<CheckoutWebViewWidget> {
 
     controller = WebViewController()
       ..loadHtmlString(
-        CheckoutStrings.continueCheckout(
-          widget.pageData.orderId,
-          widget.pageData.reference,
-          widget.pageData.jwt,
-          widget.pageData.customData,
-        ),
+        widget.pageData.html ?? "",
       )
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..addJavaScriptChannel(

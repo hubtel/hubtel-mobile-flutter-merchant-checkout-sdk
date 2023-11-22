@@ -8,6 +8,7 @@ class Setup3dsResponse implements Serializable {
   final String? deviceDataCollectionUrl;
   final String? clientReference;
   final String? transactionId;
+  final String? html;
 
   Setup3dsResponse({
     this.id,
@@ -17,6 +18,7 @@ class Setup3dsResponse implements Serializable {
     this.deviceDataCollectionUrl,
     this.clientReference,
     this.transactionId,
+    this.html
   });
 
   @override
@@ -34,6 +36,7 @@ class Setup3dsResponse implements Serializable {
 
   factory Setup3dsResponse.fromJson(Map<String, dynamic>? json) {
     return Setup3dsResponse(
+      html: json?['html'],
       id: json?['id'],
       status: json?['status'],
       accessToken: json?['accessToken'],

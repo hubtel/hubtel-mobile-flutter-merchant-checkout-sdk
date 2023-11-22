@@ -96,7 +96,7 @@ class CheckoutEndPoint with EndPointCore {
       {required SetupPayerAuthRequest requestBody}) {
     return createEndpoint(
         authority: _basePath,
-        path: 'api/v1/merchant/$merchantId/cardnotpresent/setup-payerauth',
+        path: 'api/v1/merchant/$merchantId/cardnotpresentaccessbank/setup-payerauth',
         requestType: HttpVerb.POST,
         body: requestBody.toMap());
   }
@@ -105,7 +105,7 @@ class CheckoutEndPoint with EndPointCore {
     return createEndpoint(
         authority: _basePath,
         path:
-            'api/v1/merchant/$merchantId/cardnotpresent/enroll-payerauth/$transactionId',
+            'api/v1/merchant/$merchantId/cardnotpresentaccessbank/authenticate-payer/$transactionId',
         requestType: HttpVerb.GET);
   }
 

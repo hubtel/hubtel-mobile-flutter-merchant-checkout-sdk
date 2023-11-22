@@ -838,7 +838,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
 
     final dsRequest = SetupPayerAuthRequest(
       amount: widget.checkoutPurchase.amount,
-      cardHolderName: '',
+      cardHolderName: 'Mark Amoah',
       cardNumber: bankCard?.cardNumber ?? newCardNumber ?? '',
       cvv: bankCard?.cvv ?? newCardCvv ?? '',
       expiryMonth: savedCardExpiryMonth ?? expiryMonth ?? '',
@@ -848,6 +848,8 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
       clientReference: widget.checkoutPurchase.clientReference,
       // callbackUrl: 'https://9cb7-154-160-1-110.ngrok-free.app/payment-callback',
       callbackUrl: 'https://9cb7-154-160-1-110.ngrok-free.app/payment-callback',
+      country: "Ghana",
+        currency: "GHS"
     );
 
     widget.showLoadingDialog(
@@ -860,8 +862,9 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
     if (!context.mounted) return;
 
     if (apiResult.state == UiState.success) {
-      widget.accessToken = apiResult.data?.accessToken ?? '';
+      // widget.accessToken = apiResult.data?.accessToken ?? '';
       widget.threeDsResponse = apiResult.data ?? Setup3dsResponse();
+      _checkoutInstantServiceWithBankCard(context);
 
       setState(() {
         showWebView = true;
@@ -896,7 +899,9 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
           jwt: result.data?.jwt ?? '',
           orderId: '',
           reference: '',
-          customData: result.data?.customData ?? '');
+          customData: result.data?.customData ?? '',
+          html:  result.data?.html
+      );
 
       final onBankCallbackReceived = await Navigator.push(
           context,

@@ -11,6 +11,8 @@ class SetupPayerAuthRequest implements Serializable {
   final String description;
   final String clientReference;
   final String callbackUrl;
+  final String country;
+  final String currency;
 
   SetupPayerAuthRequest({
     required this.amount,
@@ -23,6 +25,8 @@ class SetupPayerAuthRequest implements Serializable {
     required this.description,
     required this.clientReference,
     required this.callbackUrl,
+    required this.currency,
+    required this.country
   });
 
   @override
@@ -38,11 +42,15 @@ class SetupPayerAuthRequest implements Serializable {
       'description': description,
       'clientReference': clientReference,
       'callbackUrl': callbackUrl,
+      "country": country,
+      "currency": currency
     };
   }
 
   factory SetupPayerAuthRequest.fromJson(Map<String, dynamic> json) {
     return SetupPayerAuthRequest(
+      country: "",
+      currency: "",
       amount: json['amount'],
       cardHolderName: json['cardHolderName'],
       cardNumber: json['cardNumber'],

@@ -42,7 +42,7 @@ extension CardFormattingHelper on String {
 
     List<String> splitExpiry = split('/');
     String expiryMonth = splitExpiry[0];
-    String expiryYear = '20${splitExpiry[1]}';
+    String expiryYear = splitExpiry[1];
 
     return (expiryMonth, expiryYear);
   }

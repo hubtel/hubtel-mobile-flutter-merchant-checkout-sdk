@@ -8,7 +8,7 @@ class Enroll3dsResponse implements Serializable {
   double? charges;
   String? customData;
   String? jwt;
-
+  String? html;
   String? cardStatus;
 
   Enroll3dsResponse({
@@ -31,6 +31,7 @@ class Enroll3dsResponse implements Serializable {
     customData = json?['customData'];
     jwt = json?['jwt'];
     cardStatus = json?['cardStatus'];
+    html = json?["html"];
   }
 
   @override
