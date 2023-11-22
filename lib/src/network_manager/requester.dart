@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-import 'package:unified_checkout_sdk/src/network_manager/network_manager.dart';
+import 'package:hubtel_merchant_checkout_sdk/src/network_manager/network_manager.dart';
 import '../resources/network_manager_strings.dart';
 
 

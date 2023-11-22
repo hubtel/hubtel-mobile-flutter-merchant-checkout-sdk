@@ -1,5 +1,22 @@
 import '../../network_manager/network_manager.dart';
 
+/*
+
+"clientReference": "",
+  "callbackUrl": "",
+  "amount": 2,
+  "description": "A card transaction",
+  "cardNumber": "",
+  "cardHolderName": "FULL NAME",
+  "cvv": "",
+  "expiryMonth": "MM",
+  "expiryYear": "YY",
+  "customerMsisdn": "",
+  "country": "GH",
+  "currency": "GHS"
+
+* */
+
 class SetupPayerAuthRequest implements Serializable {
   final double amount;
   final String cardHolderName;
@@ -25,8 +42,8 @@ class SetupPayerAuthRequest implements Serializable {
     required this.description,
     required this.clientReference,
     required this.callbackUrl,
-    required this.currency,
-    required this.country
+    this.currency = 'GHS',
+    this.country = 'GH',
   });
 
   @override
@@ -49,8 +66,8 @@ class SetupPayerAuthRequest implements Serializable {
 
   factory SetupPayerAuthRequest.fromJson(Map<String, dynamic> json) {
     return SetupPayerAuthRequest(
-      country: "",
-      currency: "",
+      country: json['country'],
+      currency: json['currency'],
       amount: json['amount'],
       cardHolderName: json['cardHolderName'],
       cardNumber: json['cardNumber'],

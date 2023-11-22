@@ -55,6 +55,7 @@ class CheckoutApi extends ApiCore {
 
   Future<ResultWrapper<Setup3dsResponse>> setupDevice({required SetupPayerAuthRequest request}) async {
     final result = await requester.makeRequest(
+        // apiEndPoint: endPoints.checkoutEndPoint.setupDeviceForBankPayment(requestBody: request)
         apiEndPoint: endPoints.checkoutEndPoint.setupDeviceForBankPayment(requestBody: request)
     );
     final data = DataResponse<Setup3dsResponse>.fromJson(result.response, (x) => Setup3dsResponse.fromJson(x));

@@ -1,6 +1,6 @@
+import 'dart:developer';
 
-
-import 'package:unified_checkout_sdk/src/utils/currency_formatter.dart';
+import 'package:hubtel_merchant_checkout_sdk/src/utils/currency_formatter.dart';
 
 import '../platform/models/models.dart';
 import 'api_core.dart';
@@ -52,8 +52,7 @@ class CheckoutEndPoint with EndPointCore {
         authority: _basePath,
         path: 'api/v1/merchant/$merchantId/unifiedcheckout/preapprovalconfirm',
         requestType: HttpVerb.GET,
-        body: request.toMap()
-    );
+        body: request.toMap());
   }
 
   Future<ApiEndPoint> fetchChannels() {
@@ -78,10 +77,7 @@ class CheckoutEndPoint with EndPointCore {
         authority: _basePath,
         path: 'api/v1/merchant/$merchantId/unifiedcheckout/feecalculation',
         requestType: HttpVerb.GET,
-        body: {
-          'Channel': channel,
-          'amount': amount.formatDoubleToString()
-        });
+        body: {'Channel': channel, 'amount': amount.formatDoubleToString()});
   }
 
   Future<ApiEndPoint> checkStatus({required String clientReference}) {
@@ -92,21 +88,46 @@ class CheckoutEndPoint with EndPointCore {
         body: {'clientReference': clientReference});
   }
 
+  // access bank api initiation
   Future<ApiEndPoint> setupDeviceForBankPayment(
       {required SetupPayerAuthRequest requestBody}) {
     return createEndpoint(
-        authority: _basePath,
-        path: 'api/v1/merchant/$merchantId/cardnotpresentaccessbank/setup-payerauth',
-        requestType: HttpVerb.POST,
-        body: requestBody.toMap());
+      authority: _basePath,
+      // path: 'api/v1/merchant/$merchantId/cardnotpresentaccessbank/setup-payerauth',
+      path: '/api/v1/merchant/$merchantId/cardnotpresentunified/initiate-authentication',
+      requestType: HttpVerb.POST,
+      body: requestBody.toMap(),
+    );
   }
 
+  Future<ApiEndPoint> initiateUnifiedEndpoint(
+      {required SetupPayerAuthRequest requestBody}) {
+    log('$requestBody', name: '$runtimeType');
+    return createEndpoint(
+      authority: _basePath,
+      path: '/api/v1/merchant/$merchantId/cardnotpresentunified/initiate-authentication',
+      requestType: HttpVerb.POST,
+      body: requestBody.toMap(),
+    );
+  }
+
+  // access bank api authentication
   Future<ApiEndPoint> makeEnrollment({required String transactionId}) {
     return createEndpoint(
-        authority: _basePath,
-        path:
-            'api/v1/merchant/$merchantId/cardnotpresentaccessbank/authenticate-payer/$transactionId',
-        requestType: HttpVerb.GET);
+      authority: _basePath,
+      // path:  'api/v1/merchant/$merchantId/cardnotpresentaccessbank/authenticate-payer/$transactionId',
+      path: '/api/v1/merchant/$merchantId/cardnotpresentunified/authenticate-payer/$transactionId',
+      requestType: HttpVerb.POST,
+    );
+  }
+
+  Future<ApiEndPoint> authenticateUnifiedEndpoint(
+      {required String transactionId}) {
+    return createEndpoint(
+      authority: _basePath,
+      path: '/api/v1/merchant/$merchantId/cardnotpresentunified/authenticate-payer/$transactionId',
+      requestType: HttpVerb.POST,
+    );
   }
 
   Future<ApiEndPoint> addMobileWallet({required AddMobileWalletBody request}) {
@@ -147,7 +168,6 @@ class CheckoutEndPoint with EndPointCore {
         authority: _basePath,
         path: 'api/v1/merchant/$merchantId/unifiedcheckout/verifyotp',
         requestType: HttpVerb.POST,
-        body: request.toMap()
-    );
+        body: request.toMap());
   }
 }

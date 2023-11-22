@@ -1,5 +1,5 @@
 
-import 'package:unified_checkout_sdk/src/extensions/string_extensions.dart';
+import 'package:hubtel_merchant_checkout_sdk/src/extensions/string_extensions.dart';
 
 class PurchaseInfo {
   double amount;

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:unified_checkout_sdk/src/custom_components/saved_bank_card_form.dart';
+import 'package:hubtel_merchant_checkout_sdk/src/custom_components/saved_bank_card_form.dart';
 
-import 'package:unified_checkout_sdk/src/utils/custom_expansion_widget.dart'
+import 'package:hubtel_merchant_checkout_sdk/src/utils/custom_expansion_widget.dart'
     as customExpansion;
 
 import '../core_ui/core_ui.dart';

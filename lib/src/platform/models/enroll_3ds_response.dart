@@ -48,3 +48,25 @@ class Enroll3dsResponse implements Serializable {
     return data;
   }
 }
+
+class CustomData implements Serializable {
+  String? orderId;
+  String? referenceId;
+
+  CustomData({this.orderId, this.referenceId});
+
+  factory CustomData.fromJson(Map<String, dynamic>? json) {
+    return CustomData(
+      orderId: json?['OrderId'],
+      referenceId: json?['ReferenceId'],
+    );
+  }
+
+  @override
+  Map<String, dynamic> toMap() {
+    return {
+      'OrderId': orderId,
+      'ReferenceId': referenceId,
+    };
+  }
+}

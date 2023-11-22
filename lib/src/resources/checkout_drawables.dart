@@ -1,7 +1,7 @@
 final class CheckoutDrawables {
   CheckoutDrawables._();
 
-  static const String _packageUrl = "packages/unified_checkout_sdk";
+  static const String _packageUrl = "packages/hubtel_merchant_checkout_sdk";
   static const String _baseUrl = "$_packageUrl/assets/drawable";
   static const String noUser = "$_baseUrl/no-user.png";
   static const String visa = "$_baseUrl/visa-logo.png";

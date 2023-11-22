@@ -3,8 +3,8 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:unified_checkout_sdk/src/extensions/widget_extensions.dart';
-import 'package:unified_checkout_sdk/src/ux/home/preapproval_confirm_success_screen.dart';
+import 'package:hubtel_merchant_checkout_sdk/src/extensions/widget_extensions.dart';
+import 'package:hubtel_merchant_checkout_sdk/src/ux/home/preapproval_confirm_success_screen.dart';
 
 import '../../network_manager/network_manager.dart';
 import '../../platform/models/models.dart';
@@ -201,9 +201,10 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
             child: AnimatedBuilder(
               builder: (context, child) {
                 return CustomButton(
-                  title: !( walletType == WalletType.BankPay) ?
-                      '${CheckoutStrings.pay} ${(totalAmountPayable ?? widget.checkoutPurchase.amount).formatMoney()}'
-                          .toUpperCase() : "GENERATE INVOICE",
+                  title: !(walletType == WalletType.BankPay)
+                      ? '${CheckoutStrings.pay} ${(totalAmountPayable ?? widget.checkoutPurchase.amount).formatMoney()}'
+                          .toUpperCase()
+                      : "GENERATE INVOICE",
                   isEnabled: checkoutHomeScreenState.isButtonEnabled.value,
                   buttonAction: () {
                     checkout();
@@ -615,10 +616,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
   }
 
   _handleButtonActivation() {
-
-    if (walletType == WalletType.BankPay){
-
-    }
+    if (walletType == WalletType.BankPay) {}
     if (feesFetched && mobileNumberController.text.trim().length >= 9) {
       checkoutHomeScreenState.isButtonEnabled.value = true;
       return;
@@ -633,7 +631,6 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
       checkoutHomeScreenState.isButtonEnabled.value = true;
       return;
     }
-
   }
 
   fetchFees() async {
@@ -837,20 +834,20 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
     }
 
     final dsRequest = SetupPayerAuthRequest(
-      amount: widget.checkoutPurchase.amount,
-      cardHolderName: 'Mark Amoah',
-      cardNumber: bankCard?.cardNumber ?? newCardNumber ?? '',
-      cvv: bankCard?.cvv ?? newCardCvv ?? '',
-      expiryMonth: savedCardExpiryMonth ?? expiryMonth ?? '',
-      expiryYear: savedCardExpiryYear ?? expiryYear ?? '',
-      customerMsisdn: CheckoutRequirements.customerMsisdn,
-      description: widget.checkoutPurchase.purchaseDescription,
-      clientReference: widget.checkoutPurchase.clientReference,
-      // callbackUrl: 'https://9cb7-154-160-1-110.ngrok-free.app/payment-callback',
-      callbackUrl: 'https://9cb7-154-160-1-110.ngrok-free.app/payment-callback',
-      country: "Ghana",
-        currency: "GHS"
-    );
+        amount: widget.checkoutPurchase.amount,
+        cardHolderName: '',
+        cardNumber: bankCard?.cardNumber ?? newCardNumber ?? '',
+        cvv: bankCard?.cvv ?? newCardCvv ?? '',
+        expiryMonth: savedCardExpiryMonth ?? expiryMonth ?? '',
+        expiryYear: savedCardExpiryYear ?? expiryYear ?? '',
+        customerMsisdn: CheckoutRequirements.customerMsisdn,
+        description: widget.checkoutPurchase.purchaseDescription,
+        clientReference: widget.checkoutPurchase.clientReference,
+        // callbackUrl: 'https://9cb7-154-160-1-110.ngrok-free.app/payment-callback',
+        callbackUrl:
+            'https://9cb7-154-160-1-110.ngrok-free.app/payment-callback',
+        country: "GH",
+        currency: "GHS");
 
     widget.showLoadingDialog(
       context: context,
@@ -866,15 +863,15 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
       widget.threeDsResponse = apiResult.data ?? Setup3dsResponse();
       _checkoutInstantServiceWithBankCard(context);
 
-      setState(() {
-        showWebView = true;
-
-        controller.loadHtmlString(
-          CheckoutStrings.makeHtmlString(
-            widget.accessToken ?? '',
-          ),
-        );
-      });
+      // setState(() {
+      //   showWebView = true;
+      //
+      //   controller.loadHtmlString(
+      //     CheckoutStrings.makeHtmlString(
+      //       widget.accessToken ?? '',
+      //     ),
+      //   );
+      // });
     } else {
       Navigator.pop(context);
 
@@ -891,34 +888,44 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
     final result = await viewModel.enroll(
         transactionId: widget.threeDsResponse?.transactionId ?? '');
 
-    if (!mounted) return;
+    print("this is enrollment");
+
     if (result.state == UiState.success) {
+      if (!mounted) return;
       Navigator.pop(context);
 
+      log('html: ${result.data?.html}', name: '$runtimeType');
+
       final webViewCheckoutData = WebCheckoutPageData(
-          jwt: result.data?.jwt ?? '',
-          orderId: '',
-          reference: '',
-          customData: result.data?.customData ?? '',
-          html:  result.data?.html
+        jwt: result.data?.jwt ?? '',
+        orderId: '',
+        reference: '',
+        customData: result.data?.customData ?? '',
+        html: result.data?.html,
       );
 
+      print("happeneing adasda ........");
+
       final onBankCallbackReceived = await Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  CheckoutWebViewWidget(pageData: webViewCheckoutData)));
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              CheckoutWebViewWidget(pageData: webViewCheckoutData),
+        ),
+      );
 
       if (onBankCallbackReceived == true) {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => CheckStatusScreen(
-                    checkoutResponse: MomoResponse(
-                        transactionId: widget.threeDsResponse?.transactionId,
-                        clientReference:
-                            widget.threeDsResponse?.clientReference),
-                    checkoutCompleted: widget.checkoutCompleted)));
+        if (!mounted) return;
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => CheckStatusScreen(
+              checkoutResponse: MomoResponse(
+                  transactionId: widget.threeDsResponse?.transactionId,
+                  clientReference: widget.threeDsResponse?.clientReference),
+              checkoutCompleted: widget.checkoutCompleted,
+            ),
+          ),
+        );
       }
     } else {
       Navigator.pop(context);
@@ -1178,3 +1185,12 @@ class _CheckoutHomeScreenState {
 
   ValueNotifier<String> get selectedChannel => _selectedChannel;
 }
+
+/*
+
+final checkoutData = WebCheckoutPageData(
+          jwt: '', orderId: orderId, reference: reference)
+      Navigator.push(context, MaterialPageRoute(builder: (context) =>
+          CheckoutWebViewWidget(pageData: checkoutData,)));
+
+ */

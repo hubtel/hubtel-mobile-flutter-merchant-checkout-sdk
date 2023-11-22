@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'package:unified_checkout_sdk/src/utils/custom_expansion_widget.dart'
+import 'package:hubtel_merchant_checkout_sdk/src/utils/custom_expansion_widget.dart'
     as customExpansion;
-import 'package:unified_checkout_sdk/src/utils/utils.dart';
+import 'package:hubtel_merchant_checkout_sdk/src/utils/utils.dart';
 import '../core_ui/core_ui.dart';
 import '../resources/resources.dart';
 import 'custom_components.dart';

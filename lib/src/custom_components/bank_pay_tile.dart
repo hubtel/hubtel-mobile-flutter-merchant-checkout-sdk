@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:unified_checkout_sdk/src/utils/custom_expansion_widget.dart'
+import 'package:hubtel_merchant_checkout_sdk/src/utils/custom_expansion_widget.dart'
     as customExpansion;
 
 import '../core_ui/core_ui.dart';

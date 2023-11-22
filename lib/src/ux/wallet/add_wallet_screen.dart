@@ -1,8 +1,8 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:unified_checkout_sdk/src/extensions/widget_extensions.dart';
-import 'package:unified_checkout_sdk/src/utils/utils.dart';
+import 'package:hubtel_merchant_checkout_sdk/src/extensions/widget_extensions.dart';
+import 'package:hubtel_merchant_checkout_sdk/src/utils/utils.dart';
 import '../../network_manager/network_manager.dart';
 import '../../platform/models/models.dart';
 import '../../resources/resources.dart';

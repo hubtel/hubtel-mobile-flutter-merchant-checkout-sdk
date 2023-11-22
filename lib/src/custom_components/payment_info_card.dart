@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:unified_checkout_sdk/src/custom_components/custom_components.dart';
-import 'package:unified_checkout_sdk/src/utils/utils.dart';
+import 'package:hubtel_merchant_checkout_sdk/src/custom_components/custom_components.dart';
+import 'package:hubtel_merchant_checkout_sdk/src/utils/utils.dart';
 
 import '../core_ui/core_ui.dart';
 import '../platform/models/models.dart';

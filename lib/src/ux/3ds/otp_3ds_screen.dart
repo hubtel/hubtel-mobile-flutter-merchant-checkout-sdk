@@ -1,6 +1,8 @@
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:unified_checkout_sdk/src/extensions/widget_extensions.dart';
+import 'package:hubtel_merchant_checkout_sdk/src/extensions/widget_extensions.dart';
+import 'package:hubtel_merchant_checkout_sdk/src/platform/models/enroll_3ds_response.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../core_ui/core_ui.dart';
@@ -47,10 +49,11 @@ class _CheckoutWebViewWidgetState extends State<CheckoutWebViewWidget> {
   void initState() {
     super.initState();
 
+    log('html:> ${widget.pageData.html}', name: '$runtimeType');
 
     controller = WebViewController()
       ..loadHtmlString(
-        widget.pageData.html ?? "",
+        widget.pageData.html ?? "<h1>Please wait ...</h1>",
       )
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..addJavaScriptChannel(
