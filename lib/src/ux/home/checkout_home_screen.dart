@@ -955,7 +955,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
                     checkoutResponse: MomoResponse(
                         transactionId: widget.threeDsResponse?.transactionId,
                         clientReference:
-                            widget.threeDsResponse?.clientReference))));
+                            widget.threeDsResponse?.clientReference), paymentType: PaymentType.card,)));
       }
     } else {
       Navigator.pop(context);
@@ -1002,6 +1002,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
                   builder: (context) => CheckStatusScreen(
                     checkoutResponse: momoResponse ?? MomoResponse(),
                     themeConfig: widget.themeConfig,
+                    paymentType: PaymentType.mobileMoney,
                   ),
                 ),
               );
@@ -1013,6 +1014,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
             builder: (context) => CheckStatusScreen(
               checkoutResponse: momoResponse ?? MomoResponse(),
               themeConfig: widget.themeConfig,
+              paymentType: PaymentType.mobileMoney,
             ),
           ),
         );
@@ -1032,7 +1034,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
         MaterialPageRoute(
           builder: (context) => BankPayReceiptScreen(
               mobileMoneyResponse: momoResponse ?? MomoResponse(),
-              businessDetails: businessRequirements),
+              businessDetails: businessRequirements, paymentType: PaymentType.bankPay,),
         ),
       );
     } else {
@@ -1042,6 +1044,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
           builder: (context) => CheckStatusScreen(
             checkoutResponse: momoResponse ?? MomoResponse(),
             themeConfig: widget.themeConfig,
+            paymentType: PaymentType.mobileMoney,
           ),
         ),
       );

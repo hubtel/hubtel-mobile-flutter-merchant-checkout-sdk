@@ -10,6 +10,7 @@ import '../../resources/checkout_strings.dart';
 
 class CheckStatusScreen extends StatefulWidget {
   final MomoResponse checkoutResponse;
+  final PaymentType paymentType;
 
   final viewModel = CheckoutViewModel();
   late final ThemeConfig? themeConfig;
@@ -19,6 +20,7 @@ class CheckStatusScreen extends StatefulWidget {
     super.key,
     required this.checkoutResponse,
     this.themeConfig,
+    required this.paymentType
   });
 
   @override
@@ -188,7 +190,7 @@ class _CheckStatusScreenState extends State<CheckStatusScreen> {
     }
 
     if (paymentStatus == PaymentStatus.failed) {
-      final checkoutPaymentStatus = CheckoutCompletionStatus(status: UnifiedCheckoutPaymentStatus.paymentFailed, transactionId: widget.checkoutResponse.transactionId ?? "");
+      final checkoutPaymentStatus = CheckoutCompletionStatus(status: UnifiedCheckoutPaymentStatus.paymentFailed, transactionId: widget.checkoutResponse.transactionId ?? "", clientReference: widget.checkoutResponse.clientReference, amountPaid: widget.checkoutResponse.amount);
       Navigator.pop(context);
       Navigator.pop(context, checkoutPaymentStatus);
       return;

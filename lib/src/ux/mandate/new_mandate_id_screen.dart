@@ -50,6 +50,8 @@ class _NewMandateIdScreenState extends State<NewMandateIdScreen> {
         ),
         body: SingleChildScrollView(
           child: Padding(
+
+
             padding: const EdgeInsets.all(Dimens.paddingDefault),
             child: SingleChildScrollView(
               child: Column(
@@ -115,7 +117,7 @@ class _NewMandateIdScreenState extends State<NewMandateIdScreen> {
         context,
         MaterialPageRoute(
           builder: (context) => CheckStatusScreen(
-              checkoutResponse: data ?? MomoResponse()),
+              checkoutResponse: data ?? MomoResponse(), paymentType: PaymentType.bankPay,),
         ),
       );
     } else {

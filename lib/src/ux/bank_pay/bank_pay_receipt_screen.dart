@@ -19,12 +19,15 @@ class BankPayReceiptScreen extends StatefulWidget {
   BankPayReceiptScreen(
       {Key? key,
       required this.mobileMoneyResponse,
-      required this.businessDetails})
+      required this.businessDetails,
+      required this.paymentType})
       : super(key: key);
 
   final MomoResponse mobileMoneyResponse;
 
   final HtmlRequirements businessDetails;
+
+  final PaymentType paymentType;
 
   @override
   State<BankPayReceiptScreen> createState() => _BankPayReceiptScreenState();
