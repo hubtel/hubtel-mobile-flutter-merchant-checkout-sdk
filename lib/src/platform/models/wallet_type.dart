@@ -6,7 +6,8 @@ enum WalletType {
   GMoney("GMoney"),
   Zeepay("Zeepay"),
   Hubtel("hubtel"),
-  BankPay("BankPay");
+  BankPay("BankPay"),
+  PayIn4("PayIn4");
 
   const WalletType(this.optionValue);
 

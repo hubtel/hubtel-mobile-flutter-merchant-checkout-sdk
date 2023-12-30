@@ -377,5 +377,6 @@ class CheckoutStrings {
   static const shortCode =  " *713# ";
   static const seeCode =  " to see code. ";
   static const option_5 =  " Option 5 ";
+  static const payIn4 = "Pay-In-4";
 
 }

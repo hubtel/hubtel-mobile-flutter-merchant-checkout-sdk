@@ -4,8 +4,11 @@ import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hubtel_merchant_checkout_sdk/hubtel_merchant_checkout_sdk.dart';
+import 'package:hubtel_merchant_checkout_sdk/src/core_ui/bottomsheet_component.dart';
 import 'package:hubtel_merchant_checkout_sdk/src/platform/models/otp_request_body.dart';
 import 'package:hubtel_merchant_checkout_sdk/src/ux/otp_screen/otp_screen.dart';
+import 'package:hubtel_merchant_checkout_sdk/src/ux/pay-in-4/amount_confirmation_display_screen.dart';
+import 'package:hubtel_merchant_checkout_sdk/src/ux/pay-in-4/pay_in_4_expansion_tile.dart';
 import 'package:provider/provider.dart';
 import '/src/extensions/widget_extensions.dart';
 import '/src/ux/home/preapproval_confirm_success_screen.dart';
@@ -40,7 +43,6 @@ class CheckoutHomeScreen extends StatefulWidget {
   String accessToken = '';
 
   late final Setup3dsResponse? threeDsResponse;
-
 
   CheckoutHomeScreen({
     super.key,
@@ -125,6 +127,8 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
 
   late customExpansion.ExpansionTileController bankPayExpansionController;
 
+  late customExpansion.ExpansionTileController payIn4Controller;
+
   bool isNewMandateIdChecked = false;
 
   late String otherProviderString =
@@ -134,6 +138,8 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
 
   bool didPreselectWalletType = false;
 
+  bool confirmToPayIn4 = false;
+
   late final paymentOptionsAvailable = viewModel.getPaymentChannelsUI();
 
   @override
@@ -142,6 +148,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
     bankPayExpansionController = customExpansion.ExpansionTileController();
     mobileMoneyExpansionController = customExpansion.ExpansionTileController();
     bankCardExpansionController = customExpansion.ExpansionTileController();
+    payIn4Controller = customExpansion.ExpansionTileController();
     otherPaymentWalletExpansionController =
         customExpansion.ExpansionTileController();
     mobileNumberController = TextEditingController();
@@ -181,6 +188,17 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
     mobileNumberController.addListener(onMobileNumberKeyed);
   }
 
+  String _setBottomButtonTitle(){
+    if (walletType == WalletType.BankPay){
+      return "GENERATE INVOICE";
+    }else if (walletType == WalletType.PayIn4){
+      return "ACCEPT AND PAY";
+    }
+    return '${CheckoutStrings.pay} ${(totalAmountPayable ?? widget.checkoutPurchase.amount).formatMoney()}'
+        .toUpperCase();
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -194,7 +212,9 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
           actions: [
             IconButton(
               onPressed: () {
-                final checkoutStatus = CheckoutCompletionStatus(status: UnifiedCheckoutPaymentStatus.userCancelledPayment, transactionId: "");
+                final checkoutStatus = CheckoutCompletionStatus(
+                    status: UnifiedCheckoutPaymentStatus.userCancelledPayment,
+                    transactionId: "");
                 Navigator.pop(context, checkoutStatus);
               },
               icon: Icon(
@@ -212,10 +232,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
             child: AnimatedBuilder(
               builder: (context, child) {
                 return CustomButton(
-                  title: !(walletType == WalletType.BankPay)
-                      ? '${CheckoutStrings.pay} ${(totalAmountPayable ?? widget.checkoutPurchase.amount).formatMoney()}'
-                          .toUpperCase()
-                      : "GENERATE INVOICE",
+                  title: _setBottomButtonTitle(),
                   isEnabled: checkoutHomeScreenState.isButtonEnabled.value,
                   buttonAction: () {
                     checkout();
@@ -534,7 +551,43 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
                                         isSelected:
                                             walletType == WalletType.BankPay,
                                       ),
-                                    )
+                                    ),
+                                    Container(
+                                      height: 1,
+                                      width: double.maxFinite,
+                                      color: HubtelColors.grey.shade300,
+                                    ),
+                                    PayIn4ExpansionTile(
+                                        controller: payIn4Controller,
+                                        onExpansionChanged: (value) {
+                                          if (value){
+                                            setState(() {
+                                              walletType = WalletType.PayIn4;
+                                            });
+                                            fetchFees2();
+                                          }
+                                        },
+                                        editingController:
+                                            cardCvvInputController,
+                                        isSelected: walletType == WalletType.PayIn4,
+                                        wallets: wallets,
+                                        onWalletSelected: (wallet) {},
+                                        anotherEditingController:
+                                            cardCvvInputController,
+                                        onChannelChanged: (channel) {},
+                                        onMandateTap: (mandate) {},
+                                        selectedAccount: "",
+                                        providers: [
+                                          selectedWallet ??
+                                              Wallet(
+                                                  externalId: "externalId",
+                                                  accountNo: "accountNo",
+                                                  accountName: "accountName",
+                                                  providerId: "providerId",
+                                                  provider: "provider",
+                                                  type: "type")
+                                        ],
+                                        initSelectedProvider: "", confirmToPay: confirmToPayIn4,)
                                   ],
                                 )),
                           ),
@@ -628,9 +681,11 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
                 providerName: selectedWallet?.provider ?? '');
         selectedProvider = CheckoutUtils.getProvider(
             providerString: selectedWallet?.provider ?? '');
-      }else{
+      } else {
         selectedProvider = CheckoutUtils.getProvider(
-            providerString: selectedWallet?.provider ??  momoProviderController.text.toLowerCase() ?? '');
+            providerString: selectedWallet?.provider ??
+                momoProviderController.text.toLowerCase() ??
+                '');
       }
     });
   }
@@ -654,6 +709,9 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
 
   _handleButtonActivation() {
     if (walletType == WalletType.BankPay) {}
+    if (walletType == WalletType.PayIn4){
+      checkoutHomeScreenState.isButtonEnabled.value = true;
+    }
     if (feesFetched && mobileNumberController.text.trim().length >= 9) {
       checkoutHomeScreenState.isButtonEnabled.value = true;
       return;
@@ -712,6 +770,12 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
       );
     }
 
+    if (walletType == WalletType.PayIn4){
+      checkoutHomeScreenState.isLoadingFees.value = false;
+      _handleButtonActivation();
+      return;
+    }
+
     if (walletType == WalletType.BankPay) {
       selectedProvider = MomoProvider(
           name: CheckoutStrings.bankPay, alias: CheckoutStrings.bankPay);
@@ -723,8 +787,6 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
             selectedProvider?.alias ??
             '',
         amount: widget.checkoutPurchase.amount);
-
-
 
     if (!mounted) return;
 
@@ -804,6 +866,17 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
         log('$walletType');
         payWithMomo();
       }
+    }
+
+    if (walletType == WalletType.PayIn4){
+     final onPayInfoConfirmed = await showAppBottomSheet(context: context, child: AmountDisplayConfirmationScreen(), title: "Pay-in-4", subtitle: "Please review installment terms");
+     print(onPayInfoConfirmed);
+     if (onPayInfoConfirmed == true){
+       setState(() {
+         confirmToPayIn4 = true;
+       });
+     }
+
     }
   }
 
@@ -952,10 +1025,12 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
             context,
             MaterialPageRoute(
                 builder: (context) => CheckStatusScreen(
-                    checkoutResponse: MomoResponse(
-                        transactionId: widget.threeDsResponse?.transactionId,
-                        clientReference:
-                            widget.threeDsResponse?.clientReference), paymentType: PaymentType.card,)));
+                      checkoutResponse: MomoResponse(
+                          transactionId: widget.threeDsResponse?.transactionId,
+                          clientReference:
+                              widget.threeDsResponse?.clientReference),
+                      paymentType: PaymentType.card,
+                    )));
       }
     } else {
       Navigator.pop(context);
@@ -1033,8 +1108,10 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
         context,
         MaterialPageRoute(
           builder: (context) => BankPayReceiptScreen(
-              mobileMoneyResponse: momoResponse ?? MomoResponse(),
-              businessDetails: businessRequirements, paymentType: PaymentType.bankPay,),
+            mobileMoneyResponse: momoResponse ?? MomoResponse(),
+            businessDetails: businessRequirements,
+            paymentType: PaymentType.bankPay,
+          ),
         ),
       );
     } else {
@@ -1125,7 +1202,8 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
 
   void payWithMomo({String? mandateId, bool otpDone = false}) async {
     if (CheckoutViewModel.channelFetch?.requireMobileMoneyOTP == true &&
-        !otpDone && walletType == WalletType.Momo) {
+        !otpDone &&
+        walletType == WalletType.Momo) {
       final request =
           OtpRequestBody(customerMsisdn: selectedWallet?.accountNo ?? "");
       makeGetOtpRequest(requestBody: request);
