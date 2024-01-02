@@ -2,8 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:hubtel_merchant_checkout_sdk/src/core_ui/core_ui.dart';
+import 'package:hubtel_merchant_checkout_sdk/src/resources/checkout_colors.dart';
 
-Future showAppBottomSheet(
+Future showCheckoutAppBottomSheet(
     {required BuildContext context,
       required Widget child,
       String? title,
@@ -75,9 +76,9 @@ Future showAppBottomSheet(
                                     Text(
                                       title ?? "",
                                       style: AppTextStyle.body1()
-                                          .copyWith(fontWeight: FontWeight.bold),
+                                          .copyWith(fontWeight: FontWeight.bold,),
                                     ),
-                                    Text(subtitle ?? ""),
+                                    Text(subtitle ?? "", style: AppTextStyle.body2().copyWith(color: CheckoutColors.lightGreyTextBackground),),
                                     const SizedBox(height: Dimens.paddingNano,),
                                     Container(height: 1, width: double.infinity,color: HubtelColors.grey.shade100,)
                                   ],

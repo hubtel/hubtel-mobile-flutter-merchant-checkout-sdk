@@ -76,6 +76,15 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
 
   late customExpansion.ExpansionTileController bankCardExpansionController;
 
+  TextEditingController payIn4cardNumberInputController =
+      TextEditingController();
+
+  TextEditingController payIn4cardDateInputController = TextEditingController();
+
+  TextEditingController payIn4cardCvvInputController = TextEditingController();
+
+  TextEditingController payIn4momoSelectorController = TextEditingController();
+
   late customExpansion.ExpansionTileController
       otherPaymentWalletExpansionController;
 
@@ -188,15 +197,14 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
     mobileNumberController.addListener(onMobileNumberKeyed);
   }
 
-  String _setBottomButtonTitle(){
-    if (walletType == WalletType.BankPay){
+  String _setBottomButtonTitle() {
+    if (walletType == WalletType.BankPay) {
       return "GENERATE INVOICE";
-    }else if (walletType == WalletType.PayIn4){
+    } else if (walletType == WalletType.PayIn4) {
       return "ACCEPT AND PAY";
     }
     return '${CheckoutStrings.pay} ${(totalAmountPayable ?? widget.checkoutPurchase.amount).formatMoney()}'
         .toUpperCase();
-
   }
 
   @override
@@ -558,36 +566,44 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
                                       color: HubtelColors.grey.shade300,
                                     ),
                                     PayIn4ExpansionTile(
-                                        controller: payIn4Controller,
-                                        onExpansionChanged: (value) {
-                                          if (value){
-                                            setState(() {
-                                              walletType = WalletType.PayIn4;
-                                            });
-                                            fetchFees2();
-                                          }
-                                        },
-                                        editingController:
-                                            cardCvvInputController,
-                                        isSelected: walletType == WalletType.PayIn4,
-                                        wallets: wallets,
-                                        onWalletSelected: (wallet) {},
-                                        anotherEditingController:
-                                            cardCvvInputController,
-                                        onChannelChanged: (channel) {},
-                                        onMandateTap: (mandate) {},
-                                        selectedAccount: "",
-                                        providers: [
-                                          selectedWallet ??
-                                              Wallet(
-                                                  externalId: "externalId",
-                                                  accountNo: "accountNo",
-                                                  accountName: "accountName",
-                                                  providerId: "providerId",
-                                                  provider: "provider",
-                                                  type: "type")
-                                        ],
-                                        initSelectedProvider: "", confirmToPay: confirmToPayIn4,)
+                                      controller: payIn4Controller,
+                                      onExpansionChanged: (value) {
+                                        if (value) {
+                                          setState(() {
+                                            walletType = WalletType.PayIn4;
+                                          });
+                                          fetchFees2();
+                                        }
+                                      },
+                                      cvvTextController: cardCvvInputController,
+                                      isSelected:
+                                          walletType == WalletType.PayIn4,
+                                      wallets: wallets,
+                                      onWalletSelected: (wallet) {},
+                                      cardNumberInputController:
+                                          cardCvvInputController,
+                                      onChannelChanged: (channel) {},
+                                      onMandateTap: (mandate) {},
+                                      selectedAccount: "",
+                                      providers: [
+                                        selectedWallet ??
+                                            Wallet(
+                                                externalId: "externalId",
+                                                accountNo: "accountNo",
+                                                accountName: "accountName",
+                                                providerId: "providerId",
+                                                provider: "provider",
+                                                type: "type")
+                                      ],
+                                      initSelectedProvider: "",
+                                      confirmToPay: confirmToPayIn4,
+                                      expiryDateController:
+                                          payIn4cardDateInputController,
+                                      providerFieldTextController:
+                                          payIn4momoSelectorController,
+                                      walletNumberController:
+                                          payIn4cardNumberInputController,
+                                    )
                                   ],
                                 )),
                           ),
@@ -709,7 +725,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
 
   _handleButtonActivation() {
     if (walletType == WalletType.BankPay) {}
-    if (walletType == WalletType.PayIn4){
+    if (walletType == WalletType.PayIn4) {
       checkoutHomeScreenState.isButtonEnabled.value = true;
     }
     if (feesFetched && mobileNumberController.text.trim().length >= 9) {
@@ -770,7 +786,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
       );
     }
 
-    if (walletType == WalletType.PayIn4){
+    if (walletType == WalletType.PayIn4) {
       checkoutHomeScreenState.isLoadingFees.value = false;
       _handleButtonActivation();
       return;
@@ -868,15 +884,18 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
       }
     }
 
-    if (walletType == WalletType.PayIn4){
-     final onPayInfoConfirmed = await showAppBottomSheet(context: context, child: AmountDisplayConfirmationScreen(), title: "Pay-in-4", subtitle: "Please review installment terms");
-     print(onPayInfoConfirmed);
-     if (onPayInfoConfirmed == true){
-       setState(() {
-         confirmToPayIn4 = true;
-       });
-     }
-
+    if (walletType == WalletType.PayIn4) {
+      final onPayInfoConfirmed = await showCheckoutAppBottomSheet(
+          context: context,
+          child: AmountDisplayConfirmationScreen(),
+          title: "Pay-in-4",
+          subtitle: "Please review installment terms");
+      print(onPayInfoConfirmed);
+      if (onPayInfoConfirmed == true) {
+        setState(() {
+          confirmToPayIn4 = true;
+        });
+      }
     }
   }
 

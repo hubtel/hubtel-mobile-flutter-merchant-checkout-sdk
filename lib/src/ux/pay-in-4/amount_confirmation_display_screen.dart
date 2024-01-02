@@ -27,7 +27,7 @@ class AmountDisplayConfirmationScreen extends StatelessWidget {
       interestTerms: [
         RepaymentScheduleObj(repaymentTime: "Amount", repaymentAmount: 1000),
         RepaymentScheduleObj(repaymentTime: "Interest", repaymentAmount: 80),
-        RepaymentScheduleObj(repaymentTime: "Interest Rate", repaymentAmount: 8)
+        RepaymentScheduleObj(repaymentTime: "Interest Rate", repaymentAmount: 8, type: AmountType.interestRate)
       ],
     ),
     ConfirmationScreenDisplayObject(
@@ -37,11 +37,13 @@ class AmountDisplayConfirmationScreen extends StatelessWidget {
     ConfirmationScreenDisplayObject(
       sectionType: SectionType.repaymentSchedule,
       repaymentSchedule: [
-        RepaymentScheduleObj(repaymentTime: "now", repaymentAmount: 100),
+        RepaymentScheduleObj(repaymentTime: "now", repaymentAmount: 330),
         RepaymentScheduleObj(
-            repaymentTime: "12/11/1920", repaymentAmount: 100),
+            repaymentTime: "12 Jan 2024", repaymentAmount: 250),
         RepaymentScheduleObj(
-            repaymentTime: "13/12/1990", repaymentAmount: 100)
+            repaymentTime: "12 Feb 2024", repaymentAmount: 250),
+        RepaymentScheduleObj(
+            repaymentTime: "12 March 2024", repaymentAmount: 250)
       ],
     ),
     ConfirmationScreenDisplayObject(

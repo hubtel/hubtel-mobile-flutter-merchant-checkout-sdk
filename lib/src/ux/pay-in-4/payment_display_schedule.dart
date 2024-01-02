@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hubtel_merchant_checkout_sdk/src/core_ui/core_ui.dart';
+import 'package:hubtel_merchant_checkout_sdk/src/resources/checkout_colors.dart';
 import 'package:hubtel_merchant_checkout_sdk/src/utils/currency_formatter.dart';
 import 'package:hubtel_merchant_checkout_sdk/src/ux/pay-in-4/amount_display_component.dart';
 import 'package:hubtel_merchant_checkout_sdk/src/ux/pay-in-4/repayment_schedule_table.dart';
@@ -25,9 +26,9 @@ class PaymentScheduleDisplay extends StatelessWidget {
           if (index == 1) {
             return Container(
               padding: const EdgeInsets.all(Dimens.paddingNano),
-              color: Colors.grey,
+              color: CheckoutColors.lightBackgroundGrey,
               child: AmountDisplayComponent(
-                  faintText: item.repaymentTime, amount: item.repaymentAmount),
+                  faintText: item.repaymentTime, amount: item.repaymentAmount, grayOutText: true,),
             );
           }
           return AmountDisplayComponent(
@@ -64,23 +65,23 @@ class PaymentScheduleDisplay extends StatelessWidget {
     );
   }
 
-  Widget _buildTotalHolder(double total) {
-    return Container(
-      color: Colors.teal,
-      padding: EdgeInsets.symmetric(vertical: Dimens.paddingNano),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            "Total",
-            style: AppTextStyle.body2().copyWith(fontWeight: FontWeight.bold),
-          ),
-          Text(
-            total.formatMoney(),
-            style: AppTextStyle.body2().copyWith(fontWeight: FontWeight.bold),
-          )
-        ],
-      ),
-    );
-  }
+  // Widget _buildTotalHolder(double total) {
+  //   return Container(
+  //     color: Colors.teal,
+  //     padding: EdgeInsets.symmetric(vertical: Dimens.paddingNano),
+  //     child: Row(
+  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //       children: [
+  //         Text(
+  //           "Total",
+  //           style: AppTextStyle.body2().copyWith(fontWeight: FontWeight.bold),
+  //         ),
+  //         Text(
+  //           total.formatMoney(),
+  //           style: AppTextStyle.body2().copyWith(fontWeight: FontWeight.bold),
+  //         )
+  //       ],
+  //     ),
+  //   );
+  // }
 }

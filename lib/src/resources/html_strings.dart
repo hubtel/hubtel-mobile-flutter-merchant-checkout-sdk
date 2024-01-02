@@ -1,3 +1,4 @@
+import 'package:hubtel_merchant_checkout_sdk/src/utils/currency_formatter.dart';
 import 'package:intl/intl.dart';
 
 import '../platform/models/models.dart';
@@ -214,17 +215,17 @@ class HTMLStrings {
           <tbody>
             <tr>
               <td><p>${checkoutResponse?.description ?? ""}</p></td>
-              <td><p class="no-space">GHS ${checkoutResponse?.amountAfterCharges ?? 0.00}</p></td>
+              <td><p class="no-space">${(checkoutResponse?.amountAfterCharges ?? 0.00).formatMoney()}</p></td>
             </tr>
             <tr>
               <td><p>Fees</p></td>
-              <td><p class="no-space">GHS ${checkoutResponse?.charges ?? 0.00}</p></td>
+              <td><p class="no-space">${(checkoutResponse?.charges ?? 0.00).formatMoney()}</p></td>
             </tr>
           </tbody>
           <tfoot>
             <tr>
               <td><h4>Amount to pay</h4></td>
-              <td><h4 class="no-space">GHS ${checkoutResponse?.amountCharged ?? 0.00}</h4></td>
+              <td><h4 class="no-space">${(checkoutResponse?.amountCharged ?? 0.00).formatMoney()}</h4></td>
             </tr>
           </tfoot>
         </table>

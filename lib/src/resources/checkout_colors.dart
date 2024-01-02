@@ -15,4 +15,8 @@ class CheckoutColors {
   static const ghanaCardColor = Color(0xFFEDFAF7);
   static const cardLabelColor = Color(0xFF2E2E2E);
   static const buttonDividerColor = Color(0xFFE6EAED);
+  static const lightTealCheckoutColor = Color(0XFFEDFAF7);
+  static const lightGreyBorderColor = Color(0XFF9CABB8);
+  static const lightGreyTextBackground = Color(0XFF5A6064);
+  static const lightBackgroundGrey = Color(0XFFF2F2F2);
 }

@@ -18,7 +18,7 @@ class AmountAndInterestDisplay extends StatelessWidget {
       primary: false,
       itemBuilder: (context, index) {
         final item = repaymentSchedules[index];
-        return AmountDisplayComponent(faintText: item.repaymentTime, amount: item.repaymentAmount);
+        return AmountDisplayComponent(faintText: item.repaymentTime, amount: item.repaymentAmount, type: item.type,);
       },
       separatorBuilder: (context, index) {
         return const SizedBox(

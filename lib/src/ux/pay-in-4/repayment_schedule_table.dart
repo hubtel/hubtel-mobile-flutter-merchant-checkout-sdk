@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hubtel_merchant_checkout_sdk/src/core_ui/core_ui.dart';
+import 'package:hubtel_merchant_checkout_sdk/src/resources/checkout_colors.dart';
 import 'package:hubtel_merchant_checkout_sdk/src/utils/currency_formatter.dart';
 import 'package:hubtel_merchant_checkout_sdk/src/ux/pay-in-4/amount_display_component.dart';
 
@@ -39,7 +40,7 @@ class RepaymentScheduleTable extends StatelessWidget {
           final item = repaymentSchedules[index - 1];
           return AmountDisplayComponent(
               faintText: item.repaymentTime,
-              amount: item.repaymentAmount);
+              amount: item.repaymentAmount, type: item.type,);
         },
         separatorBuilder: (context, index) {
           return const SizedBox(
@@ -66,8 +67,8 @@ class RepaymentScheduleTable extends StatelessWidget {
         const SizedBox(height: 8,),
         Container(
           width: double.infinity,
-          color: Colors.black,
-          height: 2,
+          color: CheckoutColors.lightGreyBorderColor,
+          height: 1,
         )
       ],
     );
@@ -75,7 +76,7 @@ class RepaymentScheduleTable extends StatelessWidget {
 
   Widget _buildTotalHolder(double total) {
     return Container(
-      color: Colors.teal,
+      color: CheckoutColors.lightTealCheckoutColor,
       padding: EdgeInsets.symmetric(vertical: Dimens.paddingNano),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

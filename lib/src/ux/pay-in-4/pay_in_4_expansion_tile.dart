@@ -15,9 +15,19 @@ import '/src/core_ui/core_ui.dart';
 import '/src/utils/custom_expansion_widget.dart' as customExpansion;
 
 class PayIn4ExpansionTile extends StatefulWidget {
-  final TextEditingController editingController;
+  // final TextEditingController editingController;
 
-  final TextEditingController anotherEditingController;
+  // final TextEditingController anotherEditingController;
+
+  final TextEditingController cardNumberInputController;
+
+  final TextEditingController cvvTextController;
+
+  final TextEditingController expiryDateController;
+
+  final TextEditingController providerFieldTextController;
+
+  final TextEditingController walletNumberController;
 
   bool expandOptions = false;
 
@@ -38,21 +48,37 @@ class PayIn4ExpansionTile extends StatefulWidget {
 
   bool confirmToPay;
 
+  bool useMtnMomo = true;
+
+  bool useVodaMomo = false;
+
+  bool useBank = false;
+
+  List<String> bankCardTypeTabNames = [
+    CheckoutStrings.useNewCard,
+    CheckoutStrings.useSavedCard
+  ];
+
   PayIn4ExpansionTile(
       {Key? key,
       required this.controller,
       required this.onExpansionChanged,
-      required this.editingController,
+      // required this.editingController,
       required this.isSelected,
       required this.wallets,
       required this.onWalletSelected,
-      required this.anotherEditingController,
+      // required this.anotherEditingController,
       required this.onChannelChanged,
       required this.onMandateTap,
       required this.selectedAccount,
       required this.providers,
       required this.initSelectedProvider,
-      required this.confirmToPay})
+      required this.confirmToPay,
+      required this.cardNumberInputController,
+      required this.cvvTextController,
+      required this.expiryDateController,
+      required this.providerFieldTextController,
+      required this.walletNumberController})
       : super(key: key);
 
   final customExpansion.ExpansionTileController controller;
@@ -131,7 +157,7 @@ class _OtherPaymentExpansionTileState extends State<PayIn4ExpansionTile> {
           child: _buildPayIn4DescriptionBottom(
               totalPaymentAmount: 1000,
               amountPayableNow: 330,
-              remainingAmount: 200),
+              remainingAmount: 250),
         ),
         Visibility(
             visible: widget.confirmToPay,
@@ -140,15 +166,18 @@ class _OtherPaymentExpansionTileState extends State<PayIn4ExpansionTile> {
           visible: widget.confirmToPay,
           child: PaymentScheduleDisplay(
             repaymentSchedules: [
-              RepaymentScheduleObj(repaymentTime: "now", repaymentAmount: 100),
               RepaymentScheduleObj(
-                repaymentTime: "12/11/1920",
-                repaymentAmount: 100,
+                repaymentTime: "Now",
+                repaymentAmount: 330,
               ),
               RepaymentScheduleObj(
-                  repaymentTime: "13/12/1990", repaymentAmount: 100),
+                repaymentTime: "12 Jan 2024",
+                repaymentAmount: 250,
+              ),
               RepaymentScheduleObj(
-                  repaymentTime: "13/12/1990", repaymentAmount: 100)
+                  repaymentTime: "12 Feb 2024", repaymentAmount: 250),
+              RepaymentScheduleObj(
+                  repaymentTime: "12 Mar 2024", repaymentAmount: 250)
             ],
           ),
         ),
@@ -287,47 +316,96 @@ class _OtherPaymentExpansionTileState extends State<PayIn4ExpansionTile> {
     return Column(
       children: [
         MobileMoneyTileField(
-          fieldController: TextEditingController(),
-          onWalletSelected: widget.onWalletSelected,
-          onProviderSelected: (provider) {},
+          fieldController: widget.providerFieldTextController,
+          onWalletSelected: (wallet) {
+            print(wallet);
+            widget.onWalletSelected(wallet);
+          },
+          onProviderSelected: (provider) {
+            _handleProviderSelection(provider: provider.alias ?? "");
+          },
           providers: [
-            MomoProvider(name: "Mtn Mobile Money"),
-            MomoProvider(name: "Vodafone cash"),
-            MomoProvider(name: "Bank Card")
+            MomoProvider(name: "Mtn Mobile Money", alias: "mtn"),
+            MomoProvider(name: "Vodafone cash", alias: "vodafone"),
+            MomoProvider(name: "Bank Card", alias: "bank")
           ],
           hintText: CheckoutStrings.mobileNetwork,
         ),
         const SizedBox(height: Dimens.paddingDefault),
-        MobileMoneyTileField(
-          fieldController: TextEditingController(),
-          onWalletSelected: widget.onWalletSelected,
-          onProviderSelected: (provider) {},
-          wallets: widget.wallets,
-          hintText: CheckoutStrings.mobileNumber,
-          isReadOnly: true,
+        Visibility(
+          visible: (widget.useMtnMomo || widget.useVodaMomo),
+          child: MobileMoneyTileField(
+            fieldController: widget.walletNumberController,
+            onWalletSelected: widget.onWalletSelected,
+            onProviderSelected: (provider) {},
+            wallets: widget.wallets,
+            hintText: CheckoutStrings.mobileNumber,
+            isReadOnly: true,
+          ),
         ),
+        // const SizedBox(
+        //   height: Dimens.paddingDefault,
+        // ),
+        Visibility(visible: widget.useBank, child: _buildBankPaymentTile()),
         const SizedBox(
           height: Dimens.paddingDefault,
-        ),
-        _buildBankPaymentTile(),
-        const SizedBox(height: Dimens.paddingDefault,)
+        )
       ],
-
     );
+  }
+
+  _handleProviderSelection({required String provider}) {
+    switch (provider) {
+      case "mtn":
+        widget.useMtnMomo = true;
+        widget.useBank = false;
+      case "vodafone":
+        widget.useMtnMomo = true;
+        widget.useBank = false;
+      case "bank":
+        widget.useMtnMomo = false;
+        widget.useBank = true;
+      default:
+        print("default actions");
+    }
+    setState(() {});
   }
 
   Widget _buildBankPaymentTile() {
     return Column(children: [
-      // NewBankCardForm(
-      //   onCardSaveChecked: (value) {},
-      //   onNewCardNumberChanged: (number) {},
-      //   onNewCardDateChanged: (date) {},
-      //   onNewCardCvvChanged: (cvv) {},
-      //   formKey: GlobalKey<FormState>(),
-      //   cardNumberInputController: TextEditingController(),
-      //   cardDateInputController: TextEditingController(),
-      //   cardCvvInputController: TextEditingController(),
-      // ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: widget.bankCardTypeTabNames
+            .asMap()
+            .entries
+            .map(
+              (e) => BankCardTypeTab(
+            tabText: e.value,
+            isSelected: e.key == 0,
+            onTap: () {
+              setState(() {
+                // if (widget.savedCards.isEmpty) {
+                //   return;
+                // }
+                // selectedTabIndex = e.key;
+                // widget.onUseNewCardSelected(e.key == 0);
+              });
+            },
+          ),
+        )
+            .toList(),
+      ),
+      SizedBox(height: 16,),
+      NewBankCardForm(
+        onCardSaveChecked: (value) {},
+        onNewCardNumberChanged: (number) {},
+        onNewCardDateChanged: (date) {},
+        onNewCardCvvChanged: (cvv) {},
+        formKey: GlobalKey<FormState>(),
+        cardNumberInputController: widget.cardNumberInputController,
+        cardDateInputController: widget.expiryDateController,
+        cardCvvInputController: widget.expiryDateController,
+      ),
       // SavedBankCardForm(
       //   cardNumberFieldController: TextEditingController(),
       //   cards: [],
