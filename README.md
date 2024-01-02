@@ -17,7 +17,7 @@ on [pub.dev](https://pub.dev) soon.
   hubtel_merchant_checkout_sdk:
     git:
       url: https://github.com/hubtel/hubtel-mobile-flutter-merchant-checkout-sdk.git
-      ref: main
+      ref: master
 ```
 
 ## Getting Started
