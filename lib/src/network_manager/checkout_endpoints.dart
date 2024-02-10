@@ -72,12 +72,21 @@ class CheckoutEndPoint with EndPointCore {
   }
 
   Future<ApiEndPoint> fetchFees(
-      {required String channel, required double amount}) {
+      {required String channel,
+      required double amount,
+      required String customerMsisdn,
+      required String clientReference,
+      String? cardNumber}) {
     return createEndpoint(
         authority: _basePath,
-        path: 'api/v1/merchant/$merchantId/unifiedcheckout/feecalculation',
-        requestType: HttpVerb.GET,
-        body: {'Channel': channel, 'amount': amount.formatDoubleToString()});
+        path: 'api/v1/merchant/$merchantId/unifiedcheckout/v2/feecalculation',
+        requestType: HttpVerb.POST,
+        body: {'Channel': channel,
+          'amount': amount.toStringAsFixed(2),
+          'customerMsisdn': customerMsisdn,
+          'clientReference': clientReference,
+          'cardNumber': cardNumber
+        });
   }
 
   Future<ApiEndPoint> checkStatus({required String clientReference}) {

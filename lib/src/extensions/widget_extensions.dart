@@ -1,4 +1,6 @@
+
 import 'package:flutter/material.dart';
+import 'package:hubtel_merchant_checkout_sdk/src/core_ui/error_container.dart';
 
 import '../core_ui/core_ui.dart';
 import '../resources/resources.dart';
@@ -23,55 +25,18 @@ extension WidgetExtension on StatefulWidget {
     );
   }
 
-  showErrorDialog({
-    required BuildContext context,
-    required String message,
-  }) {
+  showErrorDialog(
+      {required BuildContext context,
+        required String message,
+        VoidCallback? onOkayTap}) {
     showDialog(
       context: context,
       builder: (context) => HBRoundedDialog(
-        padding: const EdgeInsets.all(Dimens.paddingDefault),
+        padding: const EdgeInsets.all(0),
         borderRadius: Dimens.defaultBorderRadius,
         widget: SizedBox(
-          width: 100,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Error',
-                style: AppTextStyle.headline3(),
-              ),
-              const SizedBox(
-                height: Dimens.paddingNano,
-              ),
-              Align(
-                alignment: Alignment.center,
-                child: Text(
-                  message,
-                  style: AppTextStyle.body2().copyWith(
-                    color: ThemeConfig.themeColor,
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: Dimens.paddingNano,
-              ),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: InkWell(
-                  onTap: () => Navigator.pop(context),
-                  child: Text(
-                    CheckoutStrings.okay.toUpperCase(),
-                    style: AppTextStyle.body2().copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+          // width: Dimens.xlgImageSize,
+            child: ErrorContainer(message: message, axisSize: MainAxisSize.min,)
         ),
       ),
     );
@@ -113,7 +78,6 @@ extension HelperWigetExtension on StatelessWidget {
       ),
     );
   }
-
 
   showErrorDialog({
     required BuildContext context,
@@ -188,10 +152,19 @@ Future showAppDialog(BuildContext context,
             style: AppTextStyle.body1().copyWith(
               color: textColor,
             ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
       actions: actions,
     ),
   );
+}
+
+Widget getErrorDialog(
+    {required String message, required BuildContext context}) {
+  return Material(
+      child: ErrorContainer(message: message,)
+  );
+
 }

@@ -1,6 +1,8 @@
+
 import 'package:flutter/material.dart';
 import 'package:hubtel_merchant_checkout_sdk/src/custom_components/custom_components.dart';
-import 'package:hubtel_merchant_checkout_sdk/src/utils/utils.dart';
+import 'package:hubtel_merchant_checkout_sdk/src/utils/currency_formatter.dart';
+
 
 import '../core_ui/core_ui.dart';
 import '../platform/models/models.dart';
@@ -11,13 +13,16 @@ class PaymentInfoCard extends StatelessWidget {
   final BusinessInfo businessInfo;
   final double? checkoutFees;
   final double? totalAmountPayable;
+  List<FeesObj?>? fees;
 
   PaymentInfoCard(
       {Key? key,
-      required this.checkoutPurchase,
-      required this.businessInfo,
-      this.checkoutFees,
-      this.totalAmountPayable})
+        required this.checkoutPurchase,
+        required this.businessInfo,
+        this.checkoutFees,
+        this.totalAmountPayable,
+        this.fees
+      })
       : super(key: key);
 
   // final CheckoutPurchase checkoutPurchase;
@@ -144,42 +149,41 @@ class PaymentInfoCard extends StatelessWidget {
                     value: checkoutPurchase.amount,
                   ),
 
-                  const SizedBox(
+                  Visibility(visible: (fees != null) , child: const SizedBox(
                     height: Dimens.paddingNano,
-                  ),
+                  ),),
 
-                  ValueListenableBuilder(
-                    valueListenable: state.isLessDetails,
-                    builder: (ctx, boolean, child) {
-                      if (state.isLessDetails.value) {
-                        return Container();
-                      } else {
-                        return PaymentCardHorizontalInfo(
-                          detail: CheckoutStrings.fees,
-                          value: checkoutFees,
-                        );
-                      }
-                    },
-                  ),
 
+                  // ValueListenableBuilder(
+                  //   valueListenable: state.isLessDetails,
+                  //   builder: (ctx, boolean, child) {
+                  //
+                  //       return PaymentCardHorizontalInfo(
+                  //         detail: CheckoutStrings.fees,
+                  //         value: checkoutFees,
+                  //       );
+                  //
+                  //   },
+                  // ),
+                  ...(_createFeesColumn() ?? []),
                   const SizedBox(height: Dimens.paddingDefault),
 
-                  ValueListenableBuilder(
-                    valueListenable: state.isLessDetails,
-                    builder: (ctx, value, child) {
-                      return CustomButton(
-                        width: 100.0,
-                        title: state.isLessDetails.value
-                            ? 'View Fees'
-                            : 'Less Details',
-                        buttonAction: state.toggleIsLess,
-                        style: HubtelButtonStyle.solid,
-                        isDisabledBgColor: Colors.transparent,
-                        isEnabledBgColor: Colors.transparent,
-                        enabledTitleColor: ThemeConfig.themeColor,
-                      );
-                    },
-                  )
+                  // ValueListenableBuilder(
+                  //   valueListenable: state.isLessDetails,
+                  //   builder: (ctx, value, child) {
+                  //     return CustomButton(
+                  //       width: 100.0,
+                  //       title: state.isLessDetails.value
+                  //           ? 'View Fees'
+                  //           : 'Less Details',
+                  //       buttonAction: state.toggleIsLess,
+                  //       style: HubtelButtonStyle.solid,
+                  //       isDisabledBgColor: Colors.transparent,
+                  //       isEnabledBgColor: Colors.transparent,
+                  //       enabledTitleColor: ThemeConfig.themeColor,
+                  //     );
+                  //   },
+                  // )
                 ],
               ),
             ),
@@ -209,8 +213,8 @@ class PaymentInfoCard extends StatelessWidget {
                     Text(
                       CheckoutStrings.youWillBeCharged,
                       style: AppTextStyle.caption().copyWith(
-                          // color: Theme.of(context).primaryColor.withOpacity(1),
-                          ),
+                        // color: Theme.of(context).primaryColor.withOpacity(1),
+                      ),
                     ),
 
                     const SizedBox(height: Dimens.paddingNano),
@@ -232,6 +236,19 @@ class PaymentInfoCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  List<Widget>? _createFeesColumn(){
+    List<Widget> widgets = [];
+
+    for (var i=0; i<(fees?.length ?? 0); i++ ){
+      widgets.add(PaymentCardHorizontalInfo(
+        detail: fees?[i]?.name ?? "",
+        value: fees?[i]?.value?.toDouble(),
+      ));
+      widgets.add(const SizedBox(height: Dimens.paddingDefaultSmall,));
+    }
+    return widgets;
   }
 }
 

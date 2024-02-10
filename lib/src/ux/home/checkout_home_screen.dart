@@ -151,6 +151,10 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
 
   late final paymentOptionsAvailable = viewModel.getPaymentChannelsUI();
 
+  bool isWalletFetched = false;
+
+  List<FeesObj?>? feesObj;
+
   @override
   initState() {
     super.initState();
@@ -164,7 +168,8 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
     momoProviderController = TextEditingController();
 
     savedCardNumberFieldController = TextEditingController();
-    fetchWallets();
+    fetchWallets()
+        .then((value) => value != null ?  _handleWalletFetchCompletion(response: value) : (){});
     getBankCards();
     controller = WebViewController()
       ..loadHtmlString("<h1>mimi</h1>")
@@ -258,7 +263,10 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
               ]),
             ),
           ),
-          body: Column(
+          body: !isWalletFetched ? Center(
+              child: CircularProgressIndicator(
+                color: ThemeConfig.themeColor,
+              )) : Column(
             children: [
               SizedBox(
                   height: Dimens.zero,
@@ -275,6 +283,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
                         ),
                         child: ValueListenableBuilder(
                           builder: (ctx, value, child) => PaymentInfoCard(
+                            fees: feesObj,
                             checkoutPurchase: widget.checkoutPurchase,
                             checkoutFees:
                                 checkoutHomeScreenState.checkoutFees.value ??
@@ -560,50 +569,50 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
                                             walletType == WalletType.BankPay,
                                       ),
                                     ),
-                                    Container(
-                                      height: 1,
-                                      width: double.maxFinite,
-                                      color: HubtelColors.grey.shade300,
-                                    ),
-                                    PayIn4ExpansionTile(
-                                      controller: payIn4Controller,
-                                      onExpansionChanged: (value) {
-                                        if (value) {
-                                          setState(() {
-                                            walletType = WalletType.PayIn4;
-                                          });
-                                          fetchFees2();
-                                        }
-                                      },
-                                      cvvTextController: cardCvvInputController,
-                                      isSelected:
-                                          walletType == WalletType.PayIn4,
-                                      wallets: wallets,
-                                      onWalletSelected: (wallet) {},
-                                      cardNumberInputController:
-                                          cardCvvInputController,
-                                      onChannelChanged: (channel) {},
-                                      onMandateTap: (mandate) {},
-                                      selectedAccount: "",
-                                      providers: [
-                                        selectedWallet ??
-                                            Wallet(
-                                                externalId: "externalId",
-                                                accountNo: "accountNo",
-                                                accountName: "accountName",
-                                                providerId: "providerId",
-                                                provider: "provider",
-                                                type: "type")
-                                      ],
-                                      initSelectedProvider: "",
-                                      confirmToPay: confirmToPayIn4,
-                                      expiryDateController:
-                                          payIn4cardDateInputController,
-                                      providerFieldTextController:
-                                          payIn4momoSelectorController,
-                                      walletNumberController:
-                                          payIn4cardNumberInputController,
-                                    )
+                                    // Container(
+                                    //   height: 1,
+                                    //   width: double.maxFinite,
+                                    //   color: HubtelColors.grey.shade300,
+                                    // ),
+                                    // PayIn4ExpansionTile(
+                                    //   controller: payIn4Controller,
+                                    //   onExpansionChanged: (value) {
+                                    //     if (value) {
+                                    //       setState(() {
+                                    //         walletType = WalletType.PayIn4;
+                                    //       });
+                                    //       fetchFees2();
+                                    //     }
+                                    //   },
+                                    //   cvvTextController: cardCvvInputController,
+                                    //   isSelected:
+                                    //       walletType == WalletType.PayIn4,
+                                    //   wallets: wallets,
+                                    //   onWalletSelected: (wallet) {},
+                                    //   cardNumberInputController:
+                                    //       cardCvvInputController,
+                                    //   onChannelChanged: (channel) {},
+                                    //   onMandateTap: (mandate) {},
+                                    //   selectedAccount: "",
+                                    //   providers: [
+                                    //     selectedWallet ??
+                                    //         Wallet(
+                                    //             externalId: "externalId",
+                                    //             accountNo: "accountNo",
+                                    //             accountName: "accountName",
+                                    //             providerId: "providerId",
+                                    //             provider: "provider",
+                                    //             type: "type")
+                                    //   ],
+                                    //   initSelectedProvider: "",
+                                    //   confirmToPay: confirmToPayIn4,
+                                    //   expiryDateController:
+                                    //       payIn4cardDateInputController,
+                                    //   providerFieldTextController:
+                                    //       payIn4momoSelectorController,
+                                    //   walletNumberController:
+                                    //       payIn4cardNumberInputController,
+                                    // )
                                   ],
                                 )),
                           ),
@@ -706,20 +715,31 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
     });
   }
 
-  fetchWallets() async {
-    log('${CheckoutViewModel.channelFetch?.isHubtelInternalMerchant}',
-        name: '$runtimeType');
+  Future<UiResult<List<Wallet>>?> fetchWallets() async {
     if ((CheckoutViewModel.channelFetch?.isHubtelInternalMerchant == true)) {
       final response = await viewModel.fetchWallets();
       if (response.state == UiState.success) {
         viewModel.wallets = response.data;
-        setState(() {
-          wallets = response.data ?? [];
-        });
-        viewModel.notifyListeners();
+        return response;
       } else {
-        log('${response.hasError}', name: '$runtimeType');
+        return null;
       }
+    }
+  }
+
+  _handleWalletFetchCompletion({required UiResult<List<Wallet>> response}) {
+    if (response.state == UiState.success) {
+      viewModel.wallets = response.data;
+      setState(() {
+        isWalletFetched = true;
+        wallets = response.data ?? [];
+      });
+      // viewModel.notifyListeners();
+    } else {
+      widget.showErrorDialog(
+          context: context,
+          message: response.message,
+          onOkayTap: () => {Navigator.pop(context)});
     }
   }
 
@@ -744,35 +764,35 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
     }
   }
 
-  fetchFees() async {
-    if (walletType == WalletType.Card) {
-      selectedProvider = MomoProvider(
-          name: CheckoutStrings.BankCard,
-          alias: CheckoutStrings.getChannelNameForBankPayment(
-              cardNumberInputController.text));
-    }
-
-    final response = await viewModel.fetchFees(
-        channel: selectedProvider?.receiveMoneyPromptValue ??
-            selectedProvider?.alias ??
-            '',
-        amount: widget.checkoutPurchase.amount);
-
-    if (!mounted) return;
-
-    if (response.state == UiState.success) {
-      setState(() {
-        checkoutHomeScreenState.isLoadingFees.value = false;
-        checkoutHomeScreenState.checkoutFees.value =
-            response.data?.fees?.toDouble();
-        totalAmountPayable = response.data?.amountPayable;
-        _handleButtonActivation();
-      });
-    } else {
-      checkoutHomeScreenState.isLoadingFees.value = false;
-      widget.showErrorDialog(context: context, message: response.message);
-    }
-  }
+  // fetchFees() async {
+  //   if (walletType == WalletType.Card) {
+  //     selectedProvider = MomoProvider(
+  //         name: CheckoutStrings.BankCard,
+  //         alias: CheckoutStrings.getChannelNameForBankPayment(
+  //             cardNumberInputController.text));
+  //   }
+  //
+  //   final response = await viewModel.fetchFees(
+  //       channel: selectedProvider?.receiveMoneyPromptValue ??
+  //           selectedProvider?.alias ??
+  //           '',
+  //       amount: widget.checkoutPurchase.amount);
+  //
+  //   if (!mounted) return;
+  //
+  //   if (response.state == UiState.success) {
+  //     setState(() {
+  //       checkoutHomeScreenState.isLoadingFees.value = false;
+  //       checkoutHomeScreenState.checkoutFees.value =
+  //           response.data?.fees?.toDouble();
+  //       totalAmountPayable = response.data?.amountPayable;
+  //       _handleButtonActivation();
+  //     });
+  //   } else {
+  //     checkoutHomeScreenState.isLoadingFees.value = false;
+  //     widget.showErrorDialog(context: context, message: response.message);
+  //   }
+  // }
 
   fetchFees2({String? cardNumber}) async {
     checkoutHomeScreenState.isLoadingFees.value = true;
@@ -786,40 +806,38 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
       );
     }
 
-    if (walletType == WalletType.PayIn4) {
-      checkoutHomeScreenState.isLoadingFees.value = false;
-      _handleButtonActivation();
-      return;
-    }
-
     if (walletType == WalletType.BankPay) {
       selectedProvider = MomoProvider(
           name: CheckoutStrings.bankPay, alias: CheckoutStrings.bankPay);
     }
 
-    print("here ${selectedProvider?.receiveMoneyPromptValue}");
+
     final response = await viewModel.fetchFees(
+        clientReference: widget.checkoutPurchase.clientReference,
         channel: selectedProvider?.receiveMoneyPromptValue ??
             selectedProvider?.alias ??
-            '',
-        amount: widget.checkoutPurchase.amount);
+            'mtn-gh',
+        amount: widget.checkoutPurchase.amount, cardNumber: cardNumber);
 
     if (!mounted) return;
 
     if (response.state == UiState.success) {
       setState(() {
         feesFetched = true;
+        feesObj = response.data?.fees;
       });
       checkoutHomeScreenState.isLoadingFees.value = false;
       checkoutHomeScreenState.checkoutFees.value =
-          response.data?.fees?.toDouble();
+      0;
       totalAmountPayable = response.data?.amountPayable;
+
       _handleButtonActivation();
     } else {
       checkoutHomeScreenState.isLoadingFees.value = false;
       widget.showErrorDialog(context: context, message: response.message);
     }
   }
+
 
   void changeWalletType(String channel) {
     print("entered-here");
@@ -859,7 +877,6 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
 
       if (walletType == WalletType.GMoney) {
         final mandateId = await viewModel.getCustomerMandateId();
-        log('$mandateId', name: '$runtimeType');
         if (mandateId == null || isNewMandateIdChecked || mandateId.isEmpty) {
           Navigator.push(
             context,
@@ -879,22 +896,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
       }
 
       if (walletType == WalletType.BankPay) {
-        log('$walletType');
         payWithMomo();
-      }
-    }
-
-    if (walletType == WalletType.PayIn4) {
-      final onPayInfoConfirmed = await showCheckoutAppBottomSheet(
-          context: context,
-          child: AmountDisplayConfirmationScreen(),
-          title: "Pay-in-4",
-          subtitle: "Please review installment terms");
-      print(onPayInfoConfirmed);
-      if (onPayInfoConfirmed == true) {
-        setState(() {
-          confirmToPayIn4 = true;
-        });
       }
     }
   }
@@ -1221,24 +1223,34 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
 
   void payWithMomo({String? mandateId, bool otpDone = false}) async {
     if (CheckoutViewModel.channelFetch?.requireMobileMoneyOTP == true &&
-        !otpDone &&
-        walletType == WalletType.Momo) {
-      final request =
-          OtpRequestBody(customerMsisdn: selectedWallet?.accountNo ?? "");
+        !otpDone ) {
+      OtpRequestBody request =
+      OtpRequestBody(customerMsisdn: selectedWallet?.accountNo ?? "");
+      if (walletType == WalletType.Hubtel || walletType == WalletType.BankPay){
+        request = OtpRequestBody(customerMsisdn: CheckoutRequirements.customerMsisdn);
+      }
       makeGetOtpRequest(requestBody: request);
       return;
     }
 
-    if (CheckoutViewModel.checkoutType == CheckoutType.preapprovalconfirm) {
+    if (CheckoutViewModel.checkoutType == CheckoutType.preapprovalconfirm &&
+        !(selectedProvider?.alias == "airtelTigo") &&
+        !(selectedProvider?.alias == "hubtel-gh")) {
       makePreApprovalConfirmRequest();
       return;
     }
 
     final request = getCheckoutRequest(mandateId: mandateId);
+
     widget.showLoadingDialog(
         context: context, text: CheckoutStrings.pleaseWait);
-
-    final result = await viewModel.payWithMomo(req: request);
+    UiResult<MomoResponse> result;
+    if (CheckoutViewModel.checkoutType == CheckoutType.directdebit && !(selectedProvider?.alias == "airtelTigo") &&
+        !(selectedProvider?.alias == "hubtel-gh") && !(walletType == WalletType.GMoney) && !(walletType == WalletType.Zeepay)){
+      result = await viewModel.makeDirectDebitRequest(request: request);
+    }else{
+      result = await viewModel.payWithMomo(req: request);
+    }
 
     if (!mounted) return;
 
@@ -1254,16 +1266,15 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
 
 
   MobileMoneyPaymentRequest getCheckoutRequest({String? mandateId}) {
-    log('Callback: ${CheckoutRequirements.callbackUrl}', name: '$runtimeType');
     if (walletType == WalletType.Momo) {
-      if (CheckoutViewModel.checkoutType == CheckoutType.receivemoneyprompt) {
+      if (CheckoutViewModel.checkoutType == CheckoutType.receivemoneyprompt || CheckoutViewModel.checkoutType == CheckoutType.preapprovalconfirm) {
         return MobileMoneyPaymentRequest(
             customerName: '',
             customerMsisdn: selectedWallet?.accountNo ?? '',
             channel: selectedProvider?.receiveMoneyPromptValue ?? '',
             amount: '${widget.checkoutPurchase?.amount ?? 0.00}',
             primaryCallbackUrl: CheckoutRequirements.callbackUrl,
-            description: '',
+            description: widget.checkoutPurchase?.purchaseDescription ?? "",
             clientReference: widget.checkoutPurchase.clientReference,
             mandateId: '');
       } else if (CheckoutViewModel.checkoutType == CheckoutType.directdebit) {
@@ -1273,30 +1284,28 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
             channel: selectedProvider?.directDebitValue ?? '',
             amount: '${widget.checkoutPurchase?.amount ?? 0.00}',
             primaryCallbackUrl: CheckoutRequirements.callbackUrl,
-            description: '',
+            description: widget.checkoutPurchase?.purchaseDescription ?? "",
             clientReference: widget.checkoutPurchase.clientReference,
             mandateId: '');
       }
     } else if (walletType == WalletType.Hubtel) {
-      final hubtelWallet = wallets
-          .firstWhere((element) => element.provider?.toLowerCase() == 'hubtel');
       return MobileMoneyPaymentRequest(
           customerName: '',
-          customerMsisdn: hubtelWallet?.accountNo ?? '',
+          customerMsisdn: CheckoutRequirements.customerMsisdn,
           channel: 'hubtel-gh',
           amount: '${widget.checkoutPurchase?.amount ?? 0.00}',
           primaryCallbackUrl: CheckoutRequirements.callbackUrl,
-          description: '',
+          description: widget.checkoutPurchase?.purchaseDescription ?? "",
           clientReference: widget.checkoutPurchase.clientReference,
           mandateId: '');
     } else if (walletType == WalletType.GMoney) {
       return MobileMoneyPaymentRequest(
           customerName: '',
-          customerMsisdn: selectedWallet?.accountNo ?? '',
+          customerMsisdn: CheckoutRequirements.customerMsisdn,
           channel: 'g-money',
           amount: '${widget.checkoutPurchase?.amount ?? 0.00}',
           primaryCallbackUrl: CheckoutRequirements.callbackUrl,
-          description: '',
+          description: widget.checkoutPurchase?.purchaseDescription ?? "",
           clientReference: widget.checkoutPurchase.clientReference,
           mandateId: mandateId ?? '');
     } else if (walletType == WalletType.Zeepay) {
@@ -1340,7 +1349,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
     if (isCardNumberInputComplete &&
         isCardDateInputComplete &&
         isCardCvvInputComplete) {
-      fetchFees();
+      fetchFees2();
     }
   }
 

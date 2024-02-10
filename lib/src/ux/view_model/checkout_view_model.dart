@@ -110,9 +110,18 @@ class CheckoutViewModel extends ChangeNotifier {
   }
 
   // TODO: Fetch fees
+  // TODO: Fetch fees
   Future<UiResult<NewGetFeesResponse>> fetchFees(
-      {required String channel, required double amount}) async {
-    final result = await _checkoutApi.fetchFees(channel, amount);
+      {required String channel,
+      required double amount,
+      required String clientReference,
+      String? cardNumber}) async {
+    final result = await _checkoutApi.fetchFees(
+        channel: channel,
+        amount: amount,
+        clientReference: clientReference,
+        cardNumber: cardNumber,
+        customerMsisdn: CheckoutRequirements.customerMsisdn);
 
     if (result.apiResult == ApiResult.Success) {
       final data = result.response?.data;
@@ -159,6 +168,23 @@ class CheckoutViewModel extends ChangeNotifier {
         state: UiState.error,
         message: result.response?.message ?? '',
         data: null);
+  }
+
+  ///TODO: ADD DIRECTDEBIT API
+  Future<UiResult<MomoResponse>> makeDirectDebitRequest(
+      {required MobileMoneyPaymentRequest request}) async {
+    final result = await _checkoutApi.makeDirectDebitRequest(request: request);
+    if (result.apiResult == ApiResult.Success) {
+      return UiResult(
+          state: UiState.success,
+          message: 'Success',
+          data: result.response?.data);
+    } else {
+      return UiResult(
+          state: UiState.error,
+          message: result?.response?.message ?? "",
+          data: null);
+    }
   }
 
   //TODO Setup Device for bank card Payments
@@ -283,7 +309,7 @@ class CheckoutViewModel extends ChangeNotifier {
         message: result.response?.message ?? '',
         data: null);
   }
-  
+
   //TODO: Make otpRequest
   Future<UiResult<OtpResponse>> verifyOtp(
       {required OtpBodyRequest request}) async {
@@ -337,11 +363,15 @@ class CheckoutViewModel extends ChangeNotifier {
   }
 
   //TODO: Get OTP
-  Future<UiResult<OtpRequestResponse>> getOtp({required OtpRequestBody requestBody}) async {
+  Future<UiResult<OtpRequestResponse>> getOtp(
+      {required OtpRequestBody requestBody}) async {
     final result = await _checkoutApi.getOtp(requestBody: requestBody);
 
-    if (result.apiResult == ApiResult.Success){
-      return UiResult(state: UiState.success, message:"Success", data: result.response?.data );
+    if (result.apiResult == ApiResult.Success) {
+      return UiResult(
+          state: UiState.success,
+          message: "Success",
+          data: result.response?.data);
     }
     return UiResult(
         state: UiState.error,
@@ -350,14 +380,20 @@ class CheckoutViewModel extends ChangeNotifier {
   }
 
   //TODO: VerifyOtp
-  Future<UiResult<OtpRequestResponse>> verifyMomoOtp({required VerifyOtpBody requestBody}) async {
+  Future<UiResult<OtpRequestResponse>> verifyMomoOtp(
+      {required VerifyOtpBody requestBody}) async {
     final result = await _checkoutApi.verifyMomoOtp(requestBody: requestBody);
-    if (result.apiResult == ApiResult.Success){
-      return UiResult(state: UiState.success, message: "Success", data: result.response?.data);
+    if (result.apiResult == ApiResult.Success) {
+      return UiResult(
+          state: UiState.success,
+          message: "Success",
+          data: result.response?.data);
     }
 
-    return UiResult(state: UiState.error, message: result.response?.message ?? "", data:  null);
-
+    return UiResult(
+        state: UiState.error,
+        message: result.response?.message ?? "",
+        data: null);
   }
 
   Wallet? showHubtelActionString() {

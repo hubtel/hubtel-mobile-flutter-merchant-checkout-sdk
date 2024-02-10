@@ -35,6 +35,8 @@ final class HubtelColors {
 
   static Color caribbeanGreen = const Color(0xFF00CC8E);
 
+  static const dialogIconColor = Color(0xFFFBEBD9);
+
   ///Neutral Colors
   static const _neutralPrimaryValue = 0xFFD2D6D9;
 

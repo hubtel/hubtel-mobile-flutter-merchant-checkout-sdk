@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:hubtel_merchant_checkout_sdk/src/platform/models/otp_request_body.dart';
 import 'package:hubtel_merchant_checkout_sdk/src/platform/models/otp_request_response.dart';
 import 'package:hubtel_merchant_checkout_sdk/src/platform/models/otp_response_obj.dart';
@@ -31,12 +33,22 @@ class CheckoutApi extends ApiCore {
   }
 
   Future<ResultWrapper<NewGetFeesResponse>> fetchFees(
-      String channel, double amount) async {
+      {required String channel,
+      required double amount,
+      required String clientReference,
+      required String customerMsisdn,
+      String? cardNumber}) async {
     final result = await requester.makeRequest(
-        apiEndPoint: endPoints.checkoutEndPoint
-            .fetchFees(channel: channel, amount: amount));
+        apiEndPoint: endPoints.checkoutEndPoint.fetchFees(
+            channel: channel,
+            amount: amount,
+            customerMsisdn: customerMsisdn,
+            clientReference: clientReference));
+
     final data = DataResponse<NewGetFeesResponse>.fromJson(
-        result.response, (x) => NewGetFeesResponse.fromJson(x));
+      result.response,
+      (x) => NewGetFeesResponse.fromJson(x),
+    );
 
     return BaseApiResponse(response: data, apiResult: result.apiResult);
   }
@@ -176,10 +188,27 @@ class CheckoutApi extends ApiCore {
     return BaseApiResponse(response: data, apiResult: result.apiResult);
   }
 
-  Future<ResultWrapper<OtpRequestResponse>> verifyMomoOtp({required VerifyOtpBody requestBody}) async{
-    final  result = await requester.makeRequest(apiEndPoint: endPoints.checkoutEndPoint.verifyOtp(request: requestBody));
-    final data = DataResponse<OtpRequestResponse>.fromJson(result.response, (x) => OtpRequestResponse.fromJson(x));
+  Future<ResultWrapper<OtpRequestResponse>> verifyMomoOtp(
+      {required VerifyOtpBody requestBody}) async {
+    final result = await requester.makeRequest(
+        apiEndPoint:
+            endPoints.checkoutEndPoint.verifyOtp(request: requestBody));
+    final data = DataResponse<OtpRequestResponse>.fromJson(
+        result.response, (x) => OtpRequestResponse.fromJson(x));
     return BaseApiResponse(response: data, apiResult: result.apiResult);
   }
 
+  @override
+  Future<ResultWrapper<MomoResponse>> makeDirectDebitRequest(
+      {required MobileMoneyPaymentRequest request}) async {
+    final result = await requester.makeRequest(
+        apiEndPoint:
+            endPoints.checkoutEndPoint.getDirectDebitEndPoint(request));
+    final data = DataResponse<MomoResponse>.fromJson(
+      result.response,
+      (x) => MomoResponse.fromJson(x),
+    );
+
+    return BaseApiResponse(response: data, apiResult: result.apiResult);
+  }
 }

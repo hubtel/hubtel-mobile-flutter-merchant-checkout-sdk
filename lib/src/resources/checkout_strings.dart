@@ -153,6 +153,7 @@ class CheckoutStrings {
   static String bankPayStatusSteps2 = '\nof this pay-in-slip in your payment';
   static String bankPayStatusSteps3 = '\nhistory or dial ';
   static String bankPayShortCode = '*718*108#';
+  static const errorText = "Error";
 
   static String makeHtmlString(String accessToken) {
     return '''

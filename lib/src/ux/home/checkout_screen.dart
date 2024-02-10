@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:hubtel_merchant_checkout_sdk/src/extensions/widget_extensions.dart';
 import 'package:provider/provider.dart';
 
 import '../../core_ui/core_ui.dart';
@@ -86,6 +87,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         primaryColor: HubtelColors.teal,
                       ),
                 );
+              }else{
+                return getErrorDialog(message: snapshot?.data?.message ?? "Something went wrong while configuring business", context: context);
               }
             }
             return Center(
