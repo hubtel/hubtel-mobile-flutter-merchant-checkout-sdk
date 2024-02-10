@@ -443,9 +443,11 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
                                         onExpansionChanged: (value) {
                                           if (value == true) {
                                             setState(() {
-                                              isMobileMoneyExpanded = false;
+                                              isMobileMoneyExpanded =
+                                              false;
                                               // selectedWallet = null;
-                                              walletType = WalletType.Card;
+                                              walletType =
+                                                  WalletType.Card;
                                               checkoutHomeScreenState
                                                   .isButtonEnabled
                                                   .value = false;
@@ -454,10 +456,17 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
                                                 .expand();
                                             mobileMoneyExpansionController
                                                 .collapse();
-                                            otherPaymentWalletExpansionController
-                                                .collapse();
-                                            bankPayExpansionController
-                                                .collapse();
+                                            if (paymentOptionsAvailable
+                                                .showOtherPaymentsField) {
+                                              otherPaymentWalletExpansionController
+                                                  .collapse();
+                                            }
+                                            if (paymentOptionsAvailable
+                                                .showBankPayField) {
+                                              bankPayExpansionController
+                                                  .collapse();
+                                            }
+
 
                                             // onNewCardInputComplete();
                                           }
@@ -663,6 +672,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
         viewModel.getPaymentTypes()[0].accountName ?? "";
   }
 
+
   Future<void> onMomoTileExpansionChanged(bool value) async {
     if (value == true && !didPreSelectMomoWallet) {
       preselectMomoWallet();
@@ -678,8 +688,15 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
       });
       mobileMoneyExpansionController.expand();
       bankCardExpansionController.collapse();
-      otherPaymentWalletExpansionController.collapse();
-      bankPayExpansionController.collapse();
+
+
+      if (paymentOptionsAvailable.showOtherPaymentsField) {
+        otherPaymentWalletExpansionController.collapse();
+      }
+      if (paymentOptionsAvailable.showBankPayField) {
+        bankPayExpansionController.collapse();
+      }
+
     }
   }
 
@@ -692,7 +709,10 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
       mobileMoneyExpansionController.collapse();
       bankCardExpansionController.collapse();
       otherPaymentWalletExpansionController.expand();
-      bankPayExpansionController.collapse();
+      if (paymentOptionsAvailable.showBankPayField) {
+        bankPayExpansionController.collapse();
+      }
+
       selectedProvider = MomoProvider(alias: otherProviderString);
       fetchFees2();
     }
