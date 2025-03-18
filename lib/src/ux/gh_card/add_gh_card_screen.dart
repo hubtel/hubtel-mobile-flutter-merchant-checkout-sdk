@@ -127,7 +127,7 @@ class _AddGhCardScreenState extends State<AddGhCardScreen> {
         ),
       );
     } else {
-      widget.showErrorDialog(context: context, message: result.message);
+      widget.showErrorDialog(context: context, message: result.message, onOkayTap: (){Navigator.pop(context);});
     }
   }
 }

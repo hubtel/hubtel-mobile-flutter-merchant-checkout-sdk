@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hubtel_merchant_checkout_sdk/hubtel_merchant_checkout_sdk.dart';
 
 import '../core_ui/core_ui.dart';
 import '../resources/resources.dart';
@@ -105,7 +106,11 @@ extension WidgetExtension on StatefulWidget {
                 child: Align(
                   alignment: Alignment.center,
                   child: InkWell(
-                    onTap: () => Navigator.pop(context),
+                    onTap: onOkayTap ?? (){
+                      final checkoutPaymentStatus = CheckoutCompletionStatus(status: UnifiedCheckoutPaymentStatus.paymentFailed, transactionId: "");
+                      Navigator.pop(context);
+                      Navigator.pop(context, checkoutPaymentStatus);
+                    },
                     child: SizedBox(
                       width: Dimens.xlgImageSize,
                       child: Text(CheckoutStrings.okay.toUpperCase(),

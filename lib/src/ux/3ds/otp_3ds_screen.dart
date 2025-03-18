@@ -63,6 +63,7 @@ class _CheckoutWebViewWidgetState extends State<CheckoutWebViewWidget> {
             widget.showErrorDialog(
               context: context,
               message: "Something unexpected happened",
+              onOkayTap: (){Navigator.pop(context);}
             );
           }
         },

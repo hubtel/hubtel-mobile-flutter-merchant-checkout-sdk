@@ -334,7 +334,7 @@ class _VerifyOtpState extends State<VerifyOtp> with ValidatorMixin {
     if (response.state == UiState.success){
       Navigator.pop(context, true);
     }else{
-      widget.showErrorDialog(context: context, message: 'OTP verification failed. Try again');
+      widget.showErrorDialog(context: context, message: 'OTP verification failed. Try again', onOkayTap: (){Navigator.pop(context);});
     }
 }
 }
