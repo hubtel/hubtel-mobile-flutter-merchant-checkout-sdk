@@ -24,9 +24,12 @@ class CheckoutScreen extends StatefulWidget {
 
   late final ThemeConfig? themeConfig;
 
-  late final viewModel = CheckoutViewModel();
 
   late final List<BankCardData>? savedBankCards;
+
+  final viewModel = CheckoutViewModel();
+
+
 
   // late final Function(PaymentStatus) onCheckoutComplete;
 
@@ -50,6 +53,8 @@ class CheckoutScreen extends StatefulWidget {
 }
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
+  Future<UiResult<ChannelFetchResponse>>? result;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -58,15 +63,23 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   void onNewCardInputComplete() async {}
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+     result = widget.viewModel.fetchChannels();
+  }
+
+
+
+  @override
   Widget build(BuildContext context) {
-    log('${widget.themeConfig!.primaryColor}', name: '$runtimeType');
     ThemeConfig.themeColor = widget.themeConfig!.primaryColor;
     return MultiProvider(
       providers: [ChangeNotifierProvider(create: (_) => CheckoutViewModel())],
       child: Container(
         color: Colors.white,
         child: FutureBuilder<UiResult<ChannelFetchResponse>>(
-          future: widget.viewModel.fetchChannels(),
+          future: result,
           builder: (context,
               AsyncSnapshot<UiResult<ChannelFetchResponse>> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -109,6 +122,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       ),
     );
   }
-
-
 }
+
+
