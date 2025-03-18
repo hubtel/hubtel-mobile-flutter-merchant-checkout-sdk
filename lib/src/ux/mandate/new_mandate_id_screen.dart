@@ -119,7 +119,7 @@ class _NewMandateIdScreenState extends State<NewMandateIdScreen> {
         ),
       );
     } else {
-      widget.showErrorDialog(context: context, message: response.message);
+      widget.showErrorDialog(context: context, message: response.message, onOkayTap: (){Navigator.pop(context);});
     }
   }
 }

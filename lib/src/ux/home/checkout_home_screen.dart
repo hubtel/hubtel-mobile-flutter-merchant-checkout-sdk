@@ -945,10 +945,10 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
     final dsRequest = SetupPayerAuthRequest(
       amount: widget.checkoutPurchase.amount,
       cardHolderName: '',
-      cardNumber: bankCard?.cardNumber ?? newCardNumber ?? '',
-      cvv: bankCard?.cvv ?? newCardCvv ?? '',
-      expiryMonth: savedCardExpiryMonth ?? expiryMonth ?? '',
-      expiryYear: savedCardExpiryYear ?? expiryYear ?? '',
+      cardNumber: useNewCard ? newCardNumber ?? '' : bankCard?.cardNumber ?? newCardNumber ?? '',
+      cvv: useNewCard ? newCardCvv ?? '' : bankCard?.cvv ?? newCardCvv ?? '',
+      expiryMonth: useNewCard ? expiryMonth ?? '' : savedCardExpiryMonth ?? expiryMonth ?? '',
+      expiryYear: useNewCard ? expiryYear ?? '' : savedCardExpiryYear ?? expiryYear ?? '',
       customerMsisdn: CheckoutRequirements.customerMsisdn,
       description: widget.checkoutPurchase.purchaseDescription,
       clientReference: widget.checkoutPurchase.clientReference,
@@ -1231,9 +1231,9 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
             customerName: '',
             customerMsisdn: selectedWallet?.accountNo ?? '',
             channel: selectedProvider?.receiveMoneyPromptValue ?? '',
-            amount: '${widget.checkoutPurchase?.amount ?? 0.00}',
+            amount: '${widget.checkoutPurchase.amount ?? 0.00}',
             primaryCallbackUrl: CheckoutRequirements.callbackUrl,
-            description: widget.checkoutPurchase?.purchaseDescription ?? "",
+            description: widget.checkoutPurchase.purchaseDescription ?? "",
             clientReference: widget.checkoutPurchase.clientReference,
             mandateId: '');
       } else if (CheckoutViewModel.checkoutType == CheckoutType.directdebit) {
@@ -1241,9 +1241,9 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
             customerName: '',
             customerMsisdn: selectedWallet?.accountNo ?? '',
             channel: selectedProvider?.directDebitValue ?? '',
-            amount: '${widget.checkoutPurchase?.amount ?? 0.00}',
+            amount: '${widget.checkoutPurchase.amount ?? 0.00}',
             primaryCallbackUrl: CheckoutRequirements.callbackUrl,
-            description: widget.checkoutPurchase?.purchaseDescription ?? "",
+            description: widget.checkoutPurchase.purchaseDescription ?? "",
             clientReference: widget.checkoutPurchase.clientReference,
             mandateId: '');
       }
