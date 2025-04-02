@@ -80,6 +80,10 @@ class _CheckoutWebViewWidgetState extends State<CheckoutWebViewWidget> {
   Widget build(BuildContext context) {
     return AppPage(
       pageDecoration: PageDecoration(backgroundColor: Colors.transparent),
+      onBackPressed: (){
+         Navigator.pop(context);
+         Navigator.pop(context);
+      },
       body: WebViewWidget(
         controller: controller,
       ),
