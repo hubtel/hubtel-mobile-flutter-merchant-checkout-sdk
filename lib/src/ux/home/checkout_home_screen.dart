@@ -1030,6 +1030,8 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
             context,
             MaterialPageRoute(
                 builder: (context) => CheckStatusScreen(
+                    walletType: walletType,
+                    checkoutChannel: getCheckoutRequest().channel,
                     checkoutResponse: MomoResponse(
                         transactionId: widget.threeDsResponse?.transactionId,
                         clientReference:
@@ -1078,6 +1080,8 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => CheckStatusScreen(
+                    walletType: walletType,
+                    checkoutChannel: getCheckoutRequest().channel,
                     checkoutResponse: momoResponse ?? MomoResponse(),
                     themeConfig: widget.themeConfig,
                   ),
@@ -1089,6 +1093,8 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
           context,
           MaterialPageRoute(
             builder: (context) => CheckStatusScreen(
+              walletType: walletType,
+              checkoutChannel: getCheckoutRequest().channel,
               checkoutResponse: momoResponse ?? MomoResponse(),
               themeConfig: widget.themeConfig,
             ),
@@ -1118,6 +1124,8 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
         context,
         MaterialPageRoute(
           builder: (context) => CheckStatusScreen(
+            walletType: walletType,
+            checkoutChannel: getCheckoutRequest().channel,
             checkoutResponse: momoResponse ?? MomoResponse(),
             themeConfig: widget.themeConfig,
           ),
