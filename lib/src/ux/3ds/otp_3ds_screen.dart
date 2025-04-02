@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:hubtel_merchant_checkout_sdk/src/utils/socket_manager.dart';
 import '/src/extensions/widget_extensions.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -42,6 +43,11 @@ class _CheckoutWebViewWidgetState extends State<CheckoutWebViewWidget> {
   void initState() {
     super.initState();
 
+    final socket = SocketManager(clientReference: widget.pageData.reference);
+    socket.listen(widget.pageData.reference, onEventListened: (event) {
+      Navigator.pop(context, true);
+      socket.disposeSocket();
+    });
 
     controller = WebViewController()
       ..loadHtmlString(
@@ -53,7 +59,7 @@ class _CheckoutWebViewWidgetState extends State<CheckoutWebViewWidget> {
         onMessageReceived: (message) {
           if (message.message == CheckoutHtmlState.transactionComplete.toString()) {
             // TODO : Go back and go to the check status screen
-            Navigator.pop(context, true);
+            // Navigator.pop(context, true);
 
 
           } else if (message.message == CheckoutHtmlState.htmlLoadingFailed) {

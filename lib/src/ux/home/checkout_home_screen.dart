@@ -1006,14 +1006,24 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
           orderId: result.data?.transactionId ?? "",
           reference: result.data?.clientReference ?? '',
           customData: result.data?.customData ?? '',
-          html: result.data?.html?.replaceVariable("CONTROL_RETURN_IDENTIFIER",
-              "TransactionComplete.postMessage('${CheckoutHtmlState.transactionComplete}')"));
+          html:  CheckoutStrings.beautifyHtml(result.data?.html?.replaceVariable(
+              "CONTROL_RETURN_IDENTIFIER",
+              "TransactionComplete.postMessage('${CheckoutHtmlState
+                  .transactionComplete}')") ??
+              ""));
+      if (!mounted) {
+        return;
+      }
 
       final onBankCallbackReceived = await Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) =>
                   CheckoutWebViewWidget(pageData: webViewCheckoutData)));
+
+      if (!mounted) {
+        return;
+      }
 
       if (onBankCallbackReceived == true) {
         Navigator.push(

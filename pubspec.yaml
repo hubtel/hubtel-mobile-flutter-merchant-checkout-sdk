@@ -28,6 +28,7 @@ dependencies:
   flutter_html_to_pdf:
     git:
       url: https://github.com/mohammadhprp/flutter_html_to_pdf2
+  socket_io_client: ^3.0.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
