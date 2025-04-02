@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hubtel_merchant_checkout_sdk/hubtel_merchant_checkout_sdk.dart';
+import 'package:hubtel_merchant_checkout_sdk/src/utils/error_container.dart';
 
 import '../core_ui/core_ui.dart';
 import '../resources/resources.dart';
@@ -20,6 +21,23 @@ extension WidgetExtension on StatefulWidget {
         subtitle: subtitle,
         buttonTitle: buttonTitle,
         buttonAction: buttonAction,
+      ),
+    );
+  }
+
+  Future<dynamic> showCheckoutErrorDialog(
+      {required BuildContext context,
+        required String message,
+        VoidCallback? onOkayTap}) async{
+    return await showDialog(
+      context: context,
+      builder: (context) => HBRoundedDialog(
+        padding: const EdgeInsets.all(0),
+        borderRadius: Dimens.defaultBorderRadius,
+        widget: SizedBox(
+          // width: Dimens.xlgImageSize,
+            child: ErrorContainer(message: message, axisSize: MainAxisSize.min, onOkayTap: onOkayTap,)
+        ),
       ),
     );
   }
@@ -87,6 +105,7 @@ extension WidgetExtension on StatefulWidget {
                   vertical: Dimens.paddingNano,
                 ),
                 child: Text(
+                  textAlign: TextAlign.center,
                   CheckoutStrings.errorText,
                   style: AppTextStyle.headline4(),
                 ),

@@ -176,7 +176,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
             if (!mounted) return;
             // widget.dismissDialog(context: context);
 
-            widget.showErrorDialog(
+            widget.showCheckoutErrorDialog(
               context: context,
               message: 'Something unexpected happened',
             );
@@ -713,7 +713,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
       });
       // viewModel.notifyListeners();
     } else {
-      widget.showErrorDialog(
+      widget.showCheckoutErrorDialog(
           context: context,
           message: response.message,
           onOkayTap: () => {Navigator.pop(context)});
@@ -764,7 +764,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
       });
     } else {
       checkoutHomeScreenState.isLoadingFees.value = false;
-      widget.showErrorDialog(context: context, message: response.message);
+      widget.showCheckoutErrorDialog(context: context, message: response.message);
     }
   }
 
@@ -805,7 +805,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
       _handleButtonActivation();
     } else {
       checkoutHomeScreenState.isLoadingFees.value = false;
-      widget.showErrorDialog(context: context, message: response.message);
+      widget.showCheckoutErrorDialog(context: context, message: response.message);
     }
   }
 
@@ -982,7 +982,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
     } else {
       Navigator.pop(context);
 
-      widget.showErrorDialog(
+      widget.showCheckoutErrorDialog(
         context: context,
         message: apiResult.message,
       );
@@ -1038,7 +1038,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
     } else {
       Navigator.pop(context);
 
-      widget.showErrorDialog(
+      widget.showCheckoutErrorDialog(
         context: context,
         message: result.message,
       );
@@ -1192,7 +1192,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
           //TODO: Go to pending screen
         }
       } else {
-        widget.showErrorDialog(context: context, message: result.message);
+        widget.showCheckoutErrorDialog(context: context, message: result.message);
       }
 
       return;
@@ -1229,7 +1229,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
       final checkoutResponse = result.data;
       onCheckoutCompleted(result.data, context);
     } else {
-      widget.showErrorDialog(context: context, message: result.message);
+      widget.showCheckoutErrorDialog(context: context, message: result.message);
     }
   }
 
