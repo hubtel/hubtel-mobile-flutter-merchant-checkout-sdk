@@ -168,7 +168,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
             showWebView = false;
             setState(() {});
             _checkoutInstantServiceWithBankCard(context);
-            print('checkout succeeded successfully');
+
           } else if (message.message == CheckoutHtmlState.success.toString()) {
             print('checkout succeeded successfully');
             // TODO : Go back and go to the check status screen
@@ -176,7 +176,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
             if (!mounted) return;
             // widget.dismissDialog(context: context);
 
-            widget.showErrorDialog(
+            widget.showCheckoutErrorDialog(
               context: context,
               message: 'Something unexpected happened',
             );
@@ -187,6 +187,19 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
     cardDateInputController.addListener(onNewCardInputComplete);
     cardCvvInputController.addListener(onNewCardInputComplete);
     mobileNumberController.addListener(onMobileNumberKeyed);
+  }
+
+  @override
+  void dispose() {
+    cardCvvInputController.dispose();
+    cardNumberInputController.dispose();
+    mobileNumberController.dispose();
+    cardDateInputController.dispose();
+    savedCardNumberFieldController.dispose();
+    momoProviderController.dispose();
+    anotherMomoSelectorController.dispose();
+    momoSelectorController.dispose();
+    super.dispose();
   }
 
   @override
@@ -674,8 +687,6 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
   }
 
   void autoSelectProviderFromSelectedWallet() {
-
-    print("****\n\n\n ${selectedWallet?.provider} \n\n\n****");
     setState(() {
       if (wallets.isNotEmpty) {
         momoProviderController.text =
@@ -713,7 +724,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
       });
       // viewModel.notifyListeners();
     } else {
-      widget.showErrorDialog(
+      widget.showCheckoutErrorDialog(
           context: context,
           message: response.message,
           onOkayTap: () => {Navigator.pop(context)});
@@ -764,7 +775,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
       });
     } else {
       checkoutHomeScreenState.isLoadingFees.value = false;
-      widget.showErrorDialog(context: context, message: response.message);
+      widget.showCheckoutErrorDialog(context: context, message: response.message);
     }
   }
 
@@ -805,7 +816,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
       _handleButtonActivation();
     } else {
       checkoutHomeScreenState.isLoadingFees.value = false;
-      widget.showErrorDialog(context: context, message: response.message);
+      widget.showCheckoutErrorDialog(context: context, message: response.message);
     }
   }
 
@@ -849,6 +860,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
         final mandateId = await viewModel.getCustomerMandateId();
         log('$mandateId', name: '$runtimeType');
         if (mandateId == null || isNewMandateIdChecked || mandateId.isEmpty) {
+          if (!mounted) return;
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -982,7 +994,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
     } else {
       Navigator.pop(context);
 
-      widget.showErrorDialog(
+      widget.showCheckoutErrorDialog(
         context: context,
         message: apiResult.message,
       );
@@ -1006,8 +1018,14 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
           orderId: result.data?.transactionId ?? "",
           reference: result.data?.clientReference ?? '',
           customData: result.data?.customData ?? '',
-          html: result.data?.html?.replaceVariable("CONTROL_RETURN_IDENTIFIER",
-              "TransactionComplete.postMessage('${CheckoutHtmlState.transactionComplete}')"));
+          html:  CheckoutStrings.beautifyHtml(result.data?.html?.replaceVariable(
+              "CONTROL_RETURN_IDENTIFIER",
+              "TransactionComplete.postMessage('${CheckoutHtmlState
+                  .transactionComplete}')") ??
+              ""));
+      if (!mounted) {
+        return;
+      }
 
       final onBankCallbackReceived = await Navigator.push(
           context,
@@ -1015,11 +1033,17 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
               builder: (context) =>
                   CheckoutWebViewWidget(pageData: webViewCheckoutData)));
 
+      if (!mounted) {
+        return;
+      }
+
       if (onBankCallbackReceived == true) {
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => CheckStatusScreen(
+                    walletType: walletType,
+                    checkoutChannel: getCheckoutRequest().channel,
                     checkoutResponse: MomoResponse(
                         transactionId: widget.threeDsResponse?.transactionId,
                         clientReference:
@@ -1028,7 +1052,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
     } else {
       Navigator.pop(context);
 
-      widget.showErrorDialog(
+      widget.showCheckoutErrorDialog(
         context: context,
         message: result.message,
       );
@@ -1068,6 +1092,8 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => CheckStatusScreen(
+                    walletType: walletType,
+                    checkoutChannel: getCheckoutRequest().channel,
                     checkoutResponse: momoResponse ?? MomoResponse(),
                     themeConfig: widget.themeConfig,
                   ),
@@ -1079,6 +1105,8 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
           context,
           MaterialPageRoute(
             builder: (context) => CheckStatusScreen(
+              walletType: walletType,
+              checkoutChannel: getCheckoutRequest().channel,
               checkoutResponse: momoResponse ?? MomoResponse(),
               themeConfig: widget.themeConfig,
             ),
@@ -1088,12 +1116,12 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
     } else if (walletType == WalletType.BankPay) {
       print('Fetching logo ${viewModel.channelResponse?.businessLogoUrl}');
       final businessRequirements = HtmlRequirements(
-          imageUrl: CheckoutViewModel?.channelFetch?.businessLogoUrl ?? '',
+          imageUrl: CheckoutViewModel.channelFetch?.businessLogoUrl ?? '',
           clientName: momoResponse?.customerName ?? '',
           customerMsisdn: momoResponse?.customerMsisdn ?? '',
           slipId: momoResponse?.invoiceNumber ?? '',
           email: momoResponse?.email ?? '',
-          businessName: CheckoutViewModel?.channelFetch?.businessName ?? '');
+          businessName: CheckoutViewModel.channelFetch?.businessName ?? '');
 
       Navigator.push(
         context,
@@ -1108,6 +1136,8 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
         context,
         MaterialPageRoute(
           builder: (context) => CheckStatusScreen(
+            walletType: walletType,
+            checkoutChannel: getCheckoutRequest().channel,
             checkoutResponse: momoResponse ?? MomoResponse(),
             themeConfig: widget.themeConfig,
           ),
@@ -1117,6 +1147,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
   }
 
   void makeGetOtpRequest({required OtpRequestBody requestBody}) async {
+    if (!mounted) return;
     widget.showLoadingDialog(
         context: context, text: CheckoutStrings.pleaseWait);
 
@@ -1142,7 +1173,7 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
         ),
       );
 
-      print(onOtpDone);
+
       if (onOtpDone == true) {
         payWithMomo(otpDone: true);
       }
@@ -1157,6 +1188,9 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
           widget.checkoutPurchase.clientReference,
           mobileNumberController.text.trim(),
           widget.checkoutPurchase.purchaseDescription);
+
+      if (!mounted) return;
+
       widget.showLoadingDialog(
           context: context, text: CheckoutStrings.pleaseWait);
       final result = await viewModel.makePreApprovalConfirm(
@@ -1179,10 +1213,11 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
             ),
           );
         } else {
-          //TODO: Go to pending screen
+
         }
       } else {
-        widget.showErrorDialog(context: context, message: result.message);
+        if (!mounted) return;
+        widget.showCheckoutErrorDialog(context: context, message: result.message);
       }
 
       return;
@@ -1207,6 +1242,9 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
     }
 
     final request = getCheckoutRequest(mandateId: mandateId);
+
+    if (!mounted) return;
+
     widget.showLoadingDialog(
         context: context, text: CheckoutStrings.pleaseWait);
 
@@ -1219,12 +1257,12 @@ class _CheckoutHomeScreenState2 extends State<CheckoutHomeScreen> {
       final checkoutResponse = result.data;
       onCheckoutCompleted(result.data, context);
     } else {
-      widget.showErrorDialog(context: context, message: result.message);
+      if (!mounted) return;
+      widget.showCheckoutErrorDialog(context: context, message: result.message);
     }
   }
 
   MobileMoneyPaymentRequest getCheckoutRequest({String? mandateId}) {
-    log('Callback: ${CheckoutRequirements.callbackUrl}', name: '$runtimeType');
     if (walletType == WalletType.Momo) {
       if (CheckoutViewModel.checkoutType == CheckoutType.receivemoneyprompt) {
         return MobileMoneyPaymentRequest(
