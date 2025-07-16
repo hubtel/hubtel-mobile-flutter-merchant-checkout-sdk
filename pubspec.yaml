@@ -10,29 +10,25 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  intl: ^0.19.0
+  intl: ^0.20.2
   flutter_remix: ^0.0.3
-  provider: ^6.0.0
+  provider: ^6.1.5
   cached_network_image: ^3.2.3
-  animated_toggle_switch: ^0.7.0
+  animated_toggle_switch: ^0.8.5
   flutter_svg: ^2.0.7
-  webview_flutter: ^4.2.4
+  webview_flutter: ^4.13.0
   pdf: ^3.4.0
-  path_provider: ^2.0.4
+  path_provider: ^2.1.5
   printing: ^5.11.0
   open_filex: ^4.7.0
-#  flutter_html_to_pdf: ^0.7.0
+  #  flutter_html_to_pdf: ^0.7.0
   shared_preferences: ^2.2.1
-  url_launcher: ^6.0.12
-#  htmltopdfwidgets: ^0.0.9+1
+  url_launcher: ^6.3.1
+  #  htmltopdfwidgets: ^0.0.9+1
   flutter_html_to_pdf:
     git:
       url: https://github.com/mohammadhprp/flutter_html_to_pdf2
-  socket_io_client: ^3.0.1
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  flutter_lints: ^2.0.0
+  socket_io_client: ^3.1.2
 
 
 flutter:

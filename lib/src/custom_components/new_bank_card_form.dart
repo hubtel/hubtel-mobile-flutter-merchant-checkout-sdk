@@ -225,20 +225,15 @@ class _NewBankCardFormState extends State<NewBankCardForm> {
                         Dimens.defaultIconNormal,
                         Dimens.defaultIconNormal,
                       ),
-                      dif: 0,
-                      borderColor: Colors.transparent,
-                      innerColor: Colors.transparent,
-                      indicatorColor: HubtelColors.neutral.shade50,
-                      iconRadius: 60,
-                      // customIconBuilder: (context, local, global) => CContainer(
-                      //       color: AppColors.white,
-                      //       // shape: BoxShape.circle,
-                      //       // width: 40,
-                      //       // height: 40,
-                      //     ),
-                      indicatorBorderRadius: BorderRadius.circular(
-                        Dimens.defaultStoreItemCardWidth,
+                      style: ToggleStyle(
+                        borderColor: Colors.transparent,
+                        backgroundColor: Colors.transparent,
+                        indicatorColor: HubtelColors.neutral.shade50,
+                        indicatorBorderRadius: BorderRadius.circular(
+                          Dimens.defaultStoreItemCardWidth,
+                        ),
                       ),
+                      spacing: 0,
                       onChanged: (value) {
                         setState(() {
                           saveCardForFuture = value;
