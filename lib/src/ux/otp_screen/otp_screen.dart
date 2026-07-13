@@ -65,6 +65,13 @@ class _VerifyOtpState extends State<VerifyOtp> with ValidatorMixin {
   Widget build(BuildContext context) {
     return AppPage(
       title: "Verify",
+      onBackPressed: (){
+        Navigator.pop(context);
+        final checkoutStatus = CheckoutCompletionStatus(
+            status: UnifiedCheckoutPaymentStatus.userCancelledPayment,
+            transactionId: "");
+        Navigator.pop(context, checkoutStatus);
+      },
       titleStyle: AppTextStyle.headline2().copyWith(
         fontSize: Dimens.font18sp,
       ),
